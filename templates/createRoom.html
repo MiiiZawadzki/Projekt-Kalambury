@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <title>Tworzenie pokoju</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 vh-8" style=" line-height: 8vh;">
+            <h1>Tworzenie pokoju</h1>
+        </div>
+    </div>
+    <div class="row" >
+        <div class="col-md-12 vh-40" style="border: 1px solid black;">
+            <button onclick="location.href='/';">Wróć</button>
+            <form action="" method="post" novalidate class="joinForm">
+                <input type="range" min="0" max="100" name="turn_length" />
+                <input type="range" min="1" max="20" name="turn_count" />
+                {{ form.submit(class_='formFields')}}<br>
+                {{ form.csrf_token }}
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" ></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script>
+</body>
+</html>
