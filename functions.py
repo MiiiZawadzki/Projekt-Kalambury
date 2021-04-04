@@ -16,10 +16,14 @@ def change_current_word(room):
     if room_from_db:
         curr = room_from_db.current_word
         curr_words = room_from_db.words
-        curr_words.remove(curr)
-        if len(curr_words) != 0:
-            room_from_db.current_word = curr_words[0]
-        data = {'words': curr_words}
+
+        words = curr_words.split(';')
+        words.remove(curr)
+        words_string = ';'.join(words)
+
+        if len(words) != 0:
+            room_from_db.current_word = words[0]
+        data = {'words': words_string}
         db.session.query(Room).filter_by(room_id=room).update(data)
         db.session.commit()
 
@@ -41,8 +45,12 @@ def delete_user_from_db(username, room):
     if room_from_db:
         users_list = room_from_db.users
         if username in users_list:
-            users_list.remove(username)
-            data = {'users': users_list}
+            users = users_list.split(';')
+            users.remove(username)
+            users_string = ';'.join(users)
+
+            data = {'users': users_string}
+
             db.session.query(Room).filter_by(room_id=room).update(data)
             db.session.commit()
             # delete room if is empty
@@ -55,11 +63,11 @@ def add_user_to_db(username, room):
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         if room_from_db.users is None:
-            data = {'users': [username]}
+            data = {'users': username}
             db.session.query(Room).filter_by(room_id=room).update(data)
         else:
             users_list = room_from_db.users
-            users_list.append(username)
+            users_list+=";"+username
             data = {'users': users_list}
             db.session.query(Room).filter_by(room_id=room).update(data)
         db.session.commit()

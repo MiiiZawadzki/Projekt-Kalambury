@@ -145,8 +145,6 @@ var flag, dot_flag = false,
             $('#typedMessage').val("")
         }
     }
-
-
 });
 
 

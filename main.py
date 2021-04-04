@@ -19,7 +19,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///kalamburyDB.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-
 # server routes
 # home route
 @app.route("/", methods=['GET', 'POST'])
@@ -49,8 +48,8 @@ def create_room():
         turn_length = request.form["turn_length"]
         turn_count = request.form["turn_count"]
 
-        words = ['Koń bez rąk', 'Koń bez nóg', 'Żółty ananas', 'Legia w koronie', 'Monke in da club']
-        room = Room(room_id=session['room_id'], admin_username=session["username"], current_word=words[0], words=words)
+        words = "Koń bez rąk;Koń bez nóg;Żółty ananas;Legia w koronie;Monke in da club"
+        room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="Koń bez rąk", words=words)
         db.session.add(room)
         db.session.commit()
 
