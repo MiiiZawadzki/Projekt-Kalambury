@@ -12,3 +12,5 @@ class Room(db.Model):
     users = db.Column(db.ARRAY(db.Text()))
     current_word = db.Column(db.Text())
     words = db.Column(db.ARRAY(db.Text()))
+    who_draws = db.Column(db.Text())
+    drawing_queue = db.Column(db.ARRAY(db.Text()))

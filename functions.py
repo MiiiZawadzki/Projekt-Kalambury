@@ -2,6 +2,7 @@ from random import choice
 from string import ascii_letters, digits
 from models import Room
 from models import db
+from random import randint
 
 
 def return_current_word(room):
@@ -14,16 +15,43 @@ def return_current_word(room):
 def change_current_word(room):
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
-        curr = room_from_db.current_word
         curr_words = room_from_db.words
-
         words = curr_words.split(';')
-        words.remove(curr)
-        words_string = ';'.join(words)
-
         if len(words) != 0:
-            room_from_db.current_word = words[0]
-        data = {'words': words_string}
+            i = randint(0, len(words))
+            new = words[i]
+            words.remove(new)
+            room_from_db.current_word = new
+            words_string = ';'.join(words)
+            data = {'words': words_string}
+            db.session.query(Room).filter_by(room_id=room).update(data)
+        else:
+            room_from_db.current_word = "Skończyły się"
+        db.session.commit()
+
+
+def add_to_drawing_queue(username, room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        curr_queue = room_from_db.drawing_queue
+        queue = curr_queue.split(';')
+        queue.append(username)
+        queue_string = ';'.join(queue)
+        data = {'drawing_queue': queue_string}
+        db.session.query(Room).filter_by(room_id=room).update(data)
+        db.session.commit()
+
+
+def change_drawer(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        curr_queue = room_from_db.drawing_queue
+        queue = curr_queue.split(';')
+        new_drawer = queue.pop(0)
+        room_from_db.who_draws = new_drawer
+        # "teraz rysuje {new_drawer}"
+        queue_string = ';'.join(queue)
+        data = {'drawing_queue': queue_string}
         db.session.query(Room).filter_by(room_id=room).update(data)
         db.session.commit()
 
