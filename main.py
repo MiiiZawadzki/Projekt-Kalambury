@@ -49,7 +49,7 @@ def create_room():
         turn_count = request.form["turn_count"]
 
         words = "Koń bez rąk;Koń bez nóg;Żółty ananas;Legia w koronie;Monke in da club"
-        room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="Koń bez rąk", words=words)
+        room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="Koń bez rąk", words=words, who_draws=session["username"])
         db.session.add(room)
         db.session.commit()
 

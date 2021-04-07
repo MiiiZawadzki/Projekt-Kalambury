@@ -16,8 +16,8 @@ def change_current_word(room):
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         curr_words = room_from_db.words
-        words = curr_words.split(';')
-        if len(words) != 0:
+        if len(curr_words) != 0:
+            words = curr_words.split(';')
             i = randint(0, len(words))
             new = words[i]
             words.remove(new)
@@ -46,13 +46,19 @@ def change_drawer(room):
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         curr_queue = room_from_db.drawing_queue
-        queue = curr_queue.split(';')
-        new_drawer = queue.pop(0)
+        if len(curr_queue) != 0:
+            queue = curr_queue.split(';') 
+            new_drawer = queue.pop(0)
+            queue_string = ';'.join(queue)
+            data = {'drawing_queue': queue_string}
+            db.session.query(Room).filter_by(room_id=room).update(data)
+        else:
+            curr_drawer = room_from_db.who_draws
+            users = room_from_db.users
+            users_list = users.split(';')
+            curr_drawer_index = users_list.index(curr_drawer)
+            new_drawer = users_list[curr_drawer_index + 1]
         room_from_db.who_draws = new_drawer
-        # "teraz rysuje {new_drawer}"
-        queue_string = ';'.join(queue)
-        data = {'drawing_queue': queue_string}
-        db.session.query(Room).filter_by(room_id=room).update(data)
         db.session.commit()
 
 
