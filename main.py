@@ -6,6 +6,7 @@ from forms import *
 import urllib.parse
 from functions import *
 from models import *
+from words import return_words_string
 
 # app config
 app = Flask(__name__)
@@ -48,8 +49,8 @@ def create_room():
         turn_length = request.form["turn_length"]
         turn_count = request.form["turn_count"]
 
-        words = "Koń bez rąk;Koń bez nóg;Żółty ananas;Legia w koronie;Monke in da club"
-        room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="Koń bez rąk", words=words, who_draws=session["username"])
+        words = return_words_string()
+        room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"])
         db.session.add(room)
         db.session.commit()
 
