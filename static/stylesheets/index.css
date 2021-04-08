@@ -59,8 +59,8 @@ html {
 .middle-container {
     display: flex;
     justify-content: center;
-    width: 30%;
-    height: 50vh;
+    width: 600px;
+    height: 400px;
     padding: 2rem;
     background-color: #FFFFFF;
     border: 1px solid rgba(0, 0, 0, 0.5);
