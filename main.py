@@ -50,8 +50,7 @@ def create_room():
         turn_count = request.form["turn_count"]
 
         words = return_words_string()
-        words_array = words.split(';')
-        room = Room(room_id=session['room_id'], admin_username=session["username"], current_word=words_array[0], words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length)
+        room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length)
         db.session.add(room)
         db.session.commit()
 
@@ -101,7 +100,8 @@ def Exit():
 # background processes
 @app.route('/start_game')
 def start_game():
-    print("Gra sie zaczela")
+    room = session['room_id']
+    change_current_word(room)
     return ""
 
 

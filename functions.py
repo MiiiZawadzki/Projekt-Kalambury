@@ -18,7 +18,7 @@ def change_current_word(room):
         curr_words = room_from_db.words
         if len(curr_words) != 0:
             words = curr_words.split(';')
-            i = randint(0, len(words))
+            i = randint(0, len(words)-1)
             new = words[i]
             words.remove(new)
             room_from_db.current_word = new
