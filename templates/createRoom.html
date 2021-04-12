@@ -1,38 +1,60 @@
 <!doctype html>
 <html lang="pl">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/createRoom.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/bulma-extensions.css') }}">
     <title>Tworzenie pokoju</title>
 </head>
-<body>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12 vh-8" style=" line-height: 8vh;">
-            <h1>Tworzenie pokoju</h1>
-        </div>
-    </div>
-    <div class="row" >
-        <div class="col-md-12 vh-40" style="border: 1px solid black;">
-            <button onclick="location.href='/';">Wróć</button>
-            <form action="" method="post" novalidate class="joinForm">
-                <p>Wybierz czas trwania pojedyńczej tury:</p>
-                <input type="range" min="4" max="120" name="turn_length" id="turn_length" oninput="changeTurnLength(this.value)" onchange="changeTurnLength(this.value)" />
-                <p id="turn_length_p"></p>
-                <p>Wybierz ilość tur:</p>
-                <input type="range" min="1" max="20" name="turn_count" id="turn_count" oninput="changeTurnCount(this.value)" onchange="changeTurnCount(this.value)"/>
-                <p id="turn_count_p"></p>
-                {{ form.submit(class_='formFields')}}<br>
-                {{ form.csrf_token }}
-            </form>
-        </div>
-    </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" ></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="static/js/createRoom.js"></script>
+<body>
+    <div class="main-container">
+        <div class="rows">
+            <div class="row middle-container mb-4 center" style="height: 90px;">
+                <h1 class="subtitle is-light is-2">
+                    Tworzenie pokoju
+                </h1>
+            </div>
+            <div class="row middle-container">
+                <form class="form-container" action="" method="post" novalidate class="joinForm">
+
+                    <div class="field mb-6">
+                        <label for="turn_length">
+                            <span class="subtitle is-light is-4">
+                                Długość rundy:
+                                <span id="turn_length_p"></span>s
+                            </span>
+                        </label>
+                        <input type="range" class="slider" min="4" max="120" name="turn_length" id="turn_length" oninput="changeTurnLength(this.value)" onchange="changeTurnLength(this.value)" />
+                    </div>
+
+                    <div class="field mb-6">
+                        <label for="turn_count">
+                            <span class="subtitle is-light is-4">
+                                Ilość rund:
+                                <span id="turn_count_p"></span>
+                            </span>
+                        </label>
+                        <input type="range" class="slider" min="1" max="20" name="turn_count" id="turn_count" oninput="changeTurnCount(this.value)" onchange="changeTurnCount(this.value)" />
+                    </div>
+                    <div class="buttons is-vertical mt-2">
+                        {{ form.submit(class_='formFields button is-medium is-primary is-fullwidth')}} {{ form.csrf_token }}
+                        <input type="button" class="button is-outlined is-danger is-medium is-fullwidth" value="Wróć" onclick="location.href='/';">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/js/createRoom.js"></script>
 </body>
+
 </html>

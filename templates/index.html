@@ -23,11 +23,9 @@
                         <i class="fa fa-user"></i>
                     </span>
                 </div>
-                <div style="height: 20px;">
-                    {% for error in form.username.errors %}
-                    <div class="help is-danger ">{{ error }}</div>
-                    {% endfor %}
-                </div>
+                {% for error in form.username.errors %}
+                <div class="help is-danger ">{{ error }}</div>
+                {% endfor %}
                 <div class="buttons">
                     {{ form.submitJoin(class_='formFields button is-large is-fullwidth is-primary')}}
                     <br> {{ form.submitCreate(class_='formFields button is-large is-fullwidth is-info')}} {{ form.csrf_token }}
