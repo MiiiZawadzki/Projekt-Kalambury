@@ -3,7 +3,10 @@ words = [
     "Koń bez nóg",
     "Żółty ananas",
     "Legia w koronie",
-    "Monke in da club"
+    "Monke in da club",
+    "Słowacja",
+    "Zebra",
+    "997"
 
 ]
 
