@@ -37,9 +37,9 @@ html {
     width: 100%;
 }
 
-.alert {
-    display: flex;
-    width: 100%;
+.alerts {
+    height: 0px;
+    transition: all 0.2s;
 }
 
 .nickname-input {
