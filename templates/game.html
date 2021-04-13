@@ -15,41 +15,50 @@
     <div class="main-container">
         <div class="left-side-container">
             <div class="upper-left-container">
-                <div id="draw-tools">
-                    <div class="colors-container">
-                        <input class="color-button mr-2" style="background-color: red;" id="red" type="button">
-                        <input class="color-button mr-2" style="background-color: lightgreen;" id="green" type="button">
-                        <input class="color-button mr-2" style="background-color: yellow;" id="yellow" type="button">
-                        <input class="color-button mr-2" style="background-color: purple;" id="purple" type="button">
-                        <input class="color-button mr-2" style="background-color: black;" id="black" type="button">
-                        <input class="color-button mr-2" style="background-color: white;" id="white" type="button">
-                    </div>
-                    <div class="pencils-container">
-                        <input class="pencil-button mr-2" style="height: 28px;" id="max-width" type="button">
-                        <input class="pencil-button mr-2" style="height: 22px;" id="medium-width" type="button">
-                        <input class="pencil-button" style="height: 18px;" id="small-width" type="button">
-                    </div>
-                    <div class="timer-container">
-                        <div class="color-button center timer" id="timer">
-                            21
+                <div class="drawing-tools">
+                    <div id="draw-tools">
+                        <div class="colors-container">
+                            <input class="color-button mr-2" style="background-color: red;" id="red" type="button">
+                            <input class="color-button mr-2" style="background-color: lightgreen;" id="green" type="button">
+                            <input class="color-button mr-2" style="background-color: yellow;" id="yellow" type="button">
+                            <input class="color-button mr-2" style="background-color: purple;" id="purple" type="button">
+                            <input class="color-button mr-2" style="background-color: black;" id="black" type="button">
+                            <input class="color-button mr-2" style="background-color: white;" id="white" type="button">
                         </div>
+                        <div class="pencils-container">
+                            <input class="pencil-button mr-2" style="height: 28px;" id="max-width" type="button">
+                            <input class="pencil-button mr-2" style="height: 22px;" id="medium-width" type="button">
+                            <input class="pencil-button" style="height: 18px;" id="small-width" type="button">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timer-container">
+                    <div class="color-button center timer" id="timer">
+                        21
                     </div>
                 </div>
             </div>
             <div class="canvas" id="canvasContainer">
                 <canvas id="gameCanvas" width="1000" height="700"></canvas>
             </div>
-            <div class="room-id-container" id="room-id">
-                <div class="room-id">
-                    <span class="subtitle is-3">Pokój: {{room_id}}</span>
+            <div class="word-container">
+                <div class="word-box" id="word">
+                    Hasło: Gdybym mógł cofnąć czas to dwa razy bym pomyślał!
                 </div>
             </div>
         </div>
         <div class="right-side-container">
             <div class="upper-right-container">
+
                 <div class="current-drawing-container">
                     <div class="current-drawing-box">
                         Aktualnie rysuje:&nbsp;<b>Brandon</b>
+                    </div>
+                </div>
+                <div class="room-id-container">
+                    <div class="room-id">
+                        ID: {{room_id}}
                     </div>
                 </div>
             </div>
@@ -115,6 +124,7 @@
         <button class="button is-success" id="startGame">Start</button>
         <button class="button is-danger" id="backToApp">Wyjdź</button>
     </div>
+
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 
