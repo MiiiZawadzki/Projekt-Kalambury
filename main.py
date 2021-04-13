@@ -113,11 +113,12 @@ def on_message(received_data):
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
     word = return_current_word(room)
-    if urllib.parse.unquote(received_data['message_data']) == word:
+    if urllib.parse.unquote(received_data['message_data']) == word: 
         # zmien hasla w bazie
-        # dodaj punkty graczowi
-        # + cala inna logika ktora trzeba zrobic
         change_current_word(room)
+
+        # dodaj punkty graczowi  
+        change_users_score(username, room)    
         emit('correct', {"word": word, 'username': username}, room=room)
     send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
 

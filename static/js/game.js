@@ -1,7 +1,7 @@
 $(function() {
 var flag, dot_flag = false,
 	prevX, prevY, currX, currY = 0,
-	color = 'black', thickness = 20;
+	color = 'black', thickness = 2;
   var $canvas = $('#gameCanvas');
   var ctx = $canvas[0].getContext('2d');
 
@@ -75,7 +75,6 @@ var flag, dot_flag = false,
 
     socketIO.on('draw', data => {
         if(data.draw_data){
-            console.log(data.draw_data[0].prevX + ", "+ data.draw_data[0].prevY + " | " + data.draw_data[1].currX + ", "+ data.draw_data[1].currY);
             ctx.beginPath();
             ctx.moveTo(data.draw_data[0].prevX ,  data.draw_data[0].prevY );
             ctx.lineTo(data.draw_data[1].currX, data.draw_data[1].currY);

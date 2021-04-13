@@ -1,6 +1,6 @@
 from random import choice
 from string import ascii_letters, digits
-from models import Room
+from models import Room, User
 from models import db
 from random import randint
 
@@ -75,6 +75,7 @@ def generate_room_id():
 
 
 def delete_user_from_db(username, room):
+    # delete from rooms
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         users_list = room_from_db.users
@@ -92,8 +93,15 @@ def delete_user_from_db(username, room):
                 db.session.delete(room_from_db)
                 db.session.commit()
 
+    # delete from users
+    user_from_db = User.query.filter_by(room_id=room, username=username).first()
+    if user_from_db:
+        db.session.delete(user_from_db)
+        db.session.commit()
+
 
 def add_user_to_db(username, room):
+    # add to rooms
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         if room_from_db.users is None:
@@ -105,4 +113,14 @@ def add_user_to_db(username, room):
             data = {'users': users_list}
             db.session.query(Room).filter_by(room_id=room).update(data)
         db.session.commit()
+    
+    # add to users
+    user = User(room_id=room, username=username, score=0)
+    db.session.add(user)
+    db.session.commit()
 
+
+def change_users_score(username, room):
+    user_from_db = User.query.filter_by(room_id=room, username=username).first()
+    if user_from_db:
+        print(user_from_db.score, user_from_db.id)
