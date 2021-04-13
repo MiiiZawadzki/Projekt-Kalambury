@@ -3,6 +3,7 @@ from string import ascii_letters, digits
 from models import Room, User
 from models import db
 from random import randint
+import time
 
 
 def return_current_word(room):
@@ -123,4 +124,21 @@ def add_user_to_db(username, room):
 def change_users_score(username, room):
     user_from_db = User.query.filter_by(room_id=room, username=username).first()
     if user_from_db:
-        print(user_from_db.score, user_from_db.id)
+        user_from_db.score += 10
+        db.session.commit()
+
+"""
+def change_drawer_score(username, room):
+    user_from_db = User.query.filter_by(room_id=room, username=username).first()
+    drawer = Room.query.filter_by(who_draws=username)
+    if user_from_db.username==drawer.who_draws:
+        user_from_db.score +=5
+        db.session.commit()
+"""
+
+def timer_countdown(t): 
+    while t:
+        print(t, end=" \r")
+        time.sleep(1)
+        t -= 1
+    print("KONIEC CZASU")
