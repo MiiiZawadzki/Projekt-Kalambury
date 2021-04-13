@@ -160,7 +160,7 @@ html {
     border: 1px solid rgba(0, 0, 0, 0.5);
     box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.3);
     border-radius: 5px;
-    height: 710px;
+    height: 450px;
     width: 100%;
 }
 
@@ -187,6 +187,7 @@ html {
     width: 50px;
     border-radius: 50%;
     border: 3px solid white;
+    transition: all 0.2s;
 }
 
 .exit-button {
@@ -205,11 +206,40 @@ html {
     height: 28px;
     background: rgba(0, 0, 0, 0.64);
     border-radius: 15px;
+    transition: all 0.2s;
+}
+
+.score-table-container {
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    height: 250px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.score-table {
+    overflow-y: auto;
+    height: 80%;
+    width: 100%;
 }
 
 .pencils {
     display: flex;
     align-items: flex-end;
+}
+
+input[type="button"].color-button:focus,
+input[type="button"].color-button:active {
+    transform: scale(1.15);
+    margin-bottom: 10px;
+}
+
+input[type="button"]:hover {
+    transform: scale(1.15);
 }
 
 input[type="button"] {
