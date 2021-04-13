@@ -1,39 +1,50 @@
 <!doctype html>
 <html lang="pl">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/joinroom.css') }}">
     <title>Dołączanie do pokoju</title>
 </head>
-<body>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12 vh-8" style=" line-height: 8vh;">
-            <h1>Dołączanie do pokoju</h1>
-        </div>
-    </div>
-    <div class="row" >
-        <div class="col-md-12 vh-40" style="border: 1px solid black;">
-            <button onclick="location.href='/';">Wróć</button>
-            <form action="" method="post" novalidate class="joinForm">
-                {{ form.room_id(class_='formFields', placeholder='id pokoju')}}<br>
-                {% for error in form.room_id.errors %}
-                <li class="errorMessage"> {{ error }}</li>
-                {% endfor %}
-                {{ form.submit(class_='formFields')}}<br>
-                {% for error in form.submit.errors %}
-                <li class="errorMessage"> {{ error }}</li>
-                {% endfor %}
-                {{ form.csrf_token }}
-            </form>
-        </div>
-    </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" ></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="static/js/index.js"></script>
+<body>
+    <div class="main-container">
+        <div class="rows">
+            <div class="row middle-container mb-4" style="height: 90px;">
+                <h1 class="subtitle is-light is-2">
+                    Dołącz do pokoju
+                </h1>
+            </div>
+            <div class="row middle-container">
+                <form action="" method="post" novalidate class="joinForm form-container">
+                    <div class="field">
+                        <div class="control has-icons-left ">
+                            {{ form.room_id(class_='formFields input is-primary is-fullwidth is-medium', placeholder='id pokoju')}}
+                            <span class="icon is-small is-left">
+                                <i class="fa fa-key"></i>
+                            </span>
+                        </div>
+                        {% for error in form.room_id.errors %}
+                        <div class="help is-danger ">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="buttons is-vertical mt-2">
+                        {{ form.submit(class_='formFields button is-medium is-primary is-fullwidth')}} {{ form.csrf_token }}
+                        <input type="button" class="button is-outlined is-danger is-medium is-fullwidth" value="Wróć" onclick="location.href='/';">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/js/createRoom.js"></script>
 </body>
+
 </html>
