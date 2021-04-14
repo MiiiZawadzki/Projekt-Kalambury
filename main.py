@@ -101,8 +101,8 @@ def Exit():
 @app.route('/start_game')
 def start_game():
     room = session['room_id']
-    timer_countdown(21)
     change_current_word(room)
+    timer_countdown(21)
     return ""
 
 

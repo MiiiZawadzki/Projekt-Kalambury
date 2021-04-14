@@ -138,7 +138,7 @@ var flag, dot_flag = false,
         // if message contain < or > character send alert (prevent html injection)
         else{
             const p = document.createElement('p');
-            p.innerHTML = "An illegal characters '<' or '>' were used!";
+            p.innerHTML = "Użyto nieprawidłowych znaków: '<' lub '>' !";
             p.classList.add("alertMessage");
             document.querySelector('#messageContainer').append(p);
             $('#typedMessage').val("")
