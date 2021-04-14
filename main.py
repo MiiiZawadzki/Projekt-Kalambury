@@ -101,6 +101,7 @@ def Exit():
 @app.route('/start_game')
 def start_game():
     room = session['room_id']
+    timer_countdown(21)
     change_current_word(room)
     return ""
 
@@ -118,7 +119,9 @@ def on_message(received_data):
         change_current_word(room)
 
         # dodaj punkty graczowi  
-        change_users_score(username, room)    
+        change_users_score(username, room)
+        # dodaj punkty rysującemu   
+        # change_drawer_score(username, room) 
         emit('correct', {"word": word, 'username': username}, room=room)
     send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
 
