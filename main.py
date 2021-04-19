@@ -6,7 +6,7 @@ from forms import *
 import urllib.parse
 from functions import *
 from models import *
-from words import return_words_string
+from words import get_words_string
 
 # app config
 app = Flask(__name__)
@@ -49,7 +49,7 @@ def create_room():
         turn_length = request.form["turn_length"]
         turn_count = request.form["turn_count"]
 
-        words = return_words_string()
+        words = get_words_string(7) #turn_count
         room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length)
         db.session.add(room)
         db.session.commit()
@@ -117,6 +117,7 @@ def on_message(received_data):
     if urllib.parse.unquote(received_data['message_data']) == word: 
         # zmien hasla w bazie
         change_current_word(room)
+        change_drawer(room)
 
         # dodaj punkty graczowi  
         change_users_score(username, room)
