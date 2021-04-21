@@ -48,13 +48,15 @@ def create_room():
     if create_form.validate_on_submit():
         turn_length = request.form["turn_length"]
         turn_count = request.form["turn_count"]
+        try:
+            words = get_words_string(int(turn_count))
+            room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length)
+            db.session.add(room)
+            db.session.commit()
+            return redirect(url_for('game'))
+        except ValueError:
+             return redirect(url_for('error', error_type="error"))
 
-        words = get_words_string(7) #turn_count
-        room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length)
-        db.session.add(room)
-        db.session.commit()
-
-        return redirect(url_for('game'))
     return render_template("createRoom.html", form=create_form)
 
 
@@ -77,6 +79,13 @@ def game():
         return redirect(url_for('index'))
 
     return render_template("game.html", room_id=session['room_id'])
+
+
+# error route
+@app.route("/error/<error_type>", methods=['GET', 'POST'])
+def error(error_type):
+    return render_template("error.html", error_type=error_type)
+
 
 
 # join route
