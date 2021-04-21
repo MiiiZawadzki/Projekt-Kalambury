@@ -41,26 +41,19 @@ def add_to_drawing_queue(username, room):
         data = {'drawing_queue': queue_string}
         db.session.query(Room).filter_by(room_id=room).update(data)
         db.session.commit()
-
+        
 
 def change_drawer(room):
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
-        curr_queue = room_from_db.drawing_queue
-        if len(curr_queue) != 0:
-            queue = curr_queue.split(';') 
-            new_drawer = queue.pop(0)
-            queue_string = ';'.join(queue)
-            data = {'drawing_queue': queue_string}
-            db.session.query(Room).filter_by(room_id=room).update(data)
-        else:
+        users = room_from_db.users
+        if users:
             curr_drawer = room_from_db.who_draws
-            users = room_from_db.users
             users_list = users.split(';')
             curr_drawer_index = users_list.index(curr_drawer)
-            new_drawer = users_list[curr_drawer_index + 1]
-        room_from_db.who_draws = new_drawer
-        db.session.commit()
+            new_drawer = users_list[(curr_drawer_index + 1) % len(users_list)]
+            room_from_db.who_draws = new_drawer
+            db.session.commit()
 
 
 def generate_room_id():
