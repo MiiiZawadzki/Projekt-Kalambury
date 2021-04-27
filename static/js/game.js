@@ -1,46 +1,101 @@
-$(function() {
-var flag, dot_flag = false,
-	prevX, prevY, currX, currY = 0,
-	color = 'black', thickness = 20;
-  var $canvas = $('#gameCanvas');
-  var ctx = $canvas[0].getContext('2d');
 
-  $canvas.on('mousemove mousedown mouseup mouseout', function(e) {
-    prevX = currX;
-    prevY = currY;
-    currX = e.clientX - $canvas.offset().left;
-    currY = e.clientY - $canvas.offset().top;
+var color = 'black', thickness = 16;
 
-    if (e.type == 'mousedown') {
-        flag = true;
+$(function () {
+    var flag,
+        prevX, prevY, currX, currY = 0;
+    var $canvas = $('#gameCanvas');
+    var ctx = $canvas[0].getContext('2d');
 
-    }
-    if (e.type == 'mouseup' || e.type == 'mouseout') {
-      flag = false;
-    }
-    if (e.type == 'mousemove') {
-      if (flag) {
-        socketIO.emit('draw', {'draw_data': [{"prevX":prevX, "prevY":prevY}, {"currX":currX, "currY":currY}]});
-        ctx.beginPath();
-        ctx.moveTo(prevX, prevY);
-        ctx.lineTo(currX, currY);
-        ctx.strokeStyle = color;
-        ctx.lineWidth = thickness;
-        ctx.stroke();
-        ctx.closePath();
-      }
-    }
-  });
+    $canvas.on('mousemove mousedown mouseup mouseout', function (e) {
+        prevX = currX;
+        prevY = currY;
+        currX = e.clientX - $canvas.offset().left;
+        currY = e.clientY - $canvas.offset().top;
+
+        if (e.type == 'mousedown') {
+            flag = true;
+
+        }
+        if (e.type == 'mouseup' || e.type == 'mouseout') {
+            flag = false;
+        }
+        if (e.type == 'mousemove') {
+            
+            if (flag) {
+                socketIO.emit('draw', { 'draw_data': [{ "prevX": prevX, "prevY": prevY }, { "currX": currX, "currY": currY }], 'color': color, 'thickness': thickness});
+                ctx.beginPath();
+                ctx.moveTo(prevX, prevY);
+                ctx.lineTo(currX, currY);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = thickness;
+                ctx.arc(currX-thickness/100,currY,thickness/100,0, 2*Math.PI, true);
+		        ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+            }
+        }
+    });
+
+    // switch color [green, blue, red, yellow, black, white]
+    $(".color-button").on('click', function(){
+        var color_value = $(this).attr("id");
+        switch (color_value) {
+            case "green":
+                color = "green";
+                break;
+            case "blue":
+                color = "blue";
+                break;
+            case "red":
+                color = "red";
+                break;
+            case "yellow":
+                color = "yellow";
+                break;
+            case "black":
+                color = "black";
+                break;
+            case "white":
+                color = "white";
+                break;
+        }
+    });
+
+    $("#clear").click(function () {
+        var $canvas = $('#gameCanvas');
+        var ctx = $canvas[0].getContext('2d');
+        ctx.clearRect(0, 0, 1000, 700);
+        socketIO.emit('draw', "draw");
+    });
+
+    $(".pencil-button").on('click', function(){
+        var t = $(this).attr("id");
+        switch (t) {
+            case "max-width":
+                thickness = 22;
+                break;
+            case "medium-width":
+                thickness = 16;
+                break;
+            case "small-width":
+                thickness = 12;
+                break;
+        }
+    });
+
+
+
 
     // get username set in index.html
     user = sessionStorage.getItem("username");
 
     // connect with socket.io
-//    var socketIO = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    //    var socketIO = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
     var socketIO = io.connect("http://" + document.domain + ':' + location.port);
 
     //join to this room
-    socketIO.emit('join',"");
+    socketIO.emit('join', "");
 
     // receive messages
     socketIO.on('message', data => {
@@ -55,15 +110,15 @@ var flag, dot_flag = false,
         if (data.message_data) {
             const p = document.createElement('p');
             // display own messages
-            if (data.username == user){
+            if (data.username == user) {
                 p.classList.add("ownMessage");
-                p.innerHTML = decodeURIComponent("<b>You</b> (" +data.time+"): "+ data.message_data);
+                p.innerHTML = decodeURIComponent("<b>You</b> (" + data.time + "): " + data.message_data);
                 document.querySelector('#messageContainer').append(p);
             }
             // display others messages
-            else{
+            else {
                 p.classList.add("otherMessage");
-                p.innerHTML = decodeURIComponent(data.username + " (" +data.time+"): "+ data.message_data);
+                p.innerHTML = decodeURIComponent(data.username + " (" + data.time + "): " + data.message_data);
                 document.querySelector('#messageContainer').append(p);
             }
         }
@@ -74,38 +129,43 @@ var flag, dot_flag = false,
     });
 
     socketIO.on('draw', data => {
-        if(data.draw_data){
-            console.log(data.draw_data[0].prevX + ", "+ data.draw_data[0].prevY + " | " + data.draw_data[1].currX + ", "+ data.draw_data[1].currY);
+        if (data.draw_data) {
+            console.log(data.draw_data[0].prevX + ", " + data.draw_data[0].prevY + " | " + data.draw_data[1].currX + ", " + data.draw_data[1].currY);
             ctx.beginPath();
-            ctx.moveTo(data.draw_data[0].prevX ,  data.draw_data[0].prevY );
-            ctx.lineTo(data.draw_data[1].currX, data.draw_data[1].currY);
-            ctx.strokeStyle = color;
-            ctx.lineWidth = thickness;
+            ctx.lineTo(currX, currY);
+            ctx.strokeStyle = data.color;
+            ctx.lineWidth = data.thickness;
+            ctx.arc(data.draw_data[1].currX-thickness/100,data.draw_data[1].currY,thickness/100,0, 2*Math.PI, true);
+		    ctx.fill();
             ctx.stroke();
             ctx.closePath();
         }
     });
 
+    socketIO.on ('clear', data => {
+        ctx.clearRect(0, 0, 1000, 700);
+    });
+
     socketIO.on('correct', data => {
-            const p = document.createElement('p');
-            p.innerHTML = "Brawo! użytkownik " + data["username"] + " odgadł hasło: "+ data["word"];
-            p.classList.add("alertP");
-            document.querySelector('#messageContainer').append(p);
+        const p = document.createElement('p');
+        p.innerHTML = "Brawo! użytkownik " + data["username"] + " odgadł hasło: " + data["word"];
+        p.classList.add("alertP");
+        document.querySelector('#messageContainer').append(p);
     });
 
     // leave room
-    $( "#backToApp" ).click(function() {
+    $("#backToApp").click(function () {
         var c = confirm("Are you sure you want to leave the room?");
         if (c == true) {
-          socketIO.emit('leave',"leave");
-          location.href='/exit';
+            socketIO.emit('leave', "leave");
+            location.href = '/exit';
         }
     });
-    $('#startGame').on('click', function(e) {
+    $('#startGame').on('click', function (e) {
         e.preventDefault()
         $.getJSON('/start_game',
-            function(data) {
-        });
+            function (data) {
+            });
         return false;
     });
 
@@ -113,31 +173,31 @@ var flag, dot_flag = false,
 
     // emit leave when closing tab
     window.addEventListener("beforeunload", function (e) {
-        socketIO.emit('leave',"leave");
+        socketIO.emit('leave', "leave");
     });
 
     // send message after click on button
-    $( "#sendButton" ).click(function() {
+    $("#sendButton").click(function () {
         sendMessage();
     });
 
     // send message on enter hit
     var inputField = document.getElementById('typedMessage');
-    inputField.addEventListener("keyup", function(event) {
+    inputField.addEventListener("keyup", function (event) {
         // keyCode 13 == Enter
         if (event.keyCode === 13) {
             sendMessage();
         }
     });
 
-    function sendMessage(){
+    function sendMessage() {
         // if message don't contain < or > character send normal message
-        if (/^[^<>]*$/.test($('#typedMessage').val())){
-            socketIO.emit('message', {'message_data': encodeURIComponent($('#typedMessage').val())});
+        if (/^[^<>]*$/.test($('#typedMessage').val())) {
+            socketIO.emit('message', { 'message_data': encodeURIComponent($('#typedMessage').val()) });
             $('#typedMessage').val("")
         }
         // if message contain < or > character send alert (prevent html injection)
-        else{
+        else {
             const p = document.createElement('p');
             p.innerHTML = "An illegal characters '<' or '>' were used!";
             p.classList.add("alertMessage");
