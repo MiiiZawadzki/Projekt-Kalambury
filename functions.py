@@ -129,9 +129,23 @@ def change_drawer_score(username, room):
         db.session.commit()
 """
 
-def timer_countdown(t): 
+def timer_countdown(t, room): 
     while t:
+        if not Room.query.filter_by(room_id=room).first():
+            break
         print(t, end=" \r")
         time.sleep(1)
         t -= 1
     print("KONIEC CZASU")
+
+
+def get_turn_length(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        return int(room_from_db.turn_length)
+
+
+def game_in_room_started(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        return room_from_db.current_word != ""

@@ -110,8 +110,14 @@ def Exit():
 @app.route('/start_game')
 def start_game():
     room = session['room_id']
-    change_current_word(room)
-    timer_countdown(21)
+    if not game_in_room_started(room):
+        change_current_word(room)
+
+        # Get turn length
+        turn_length = get_turn_length(room)
+
+        # start timer
+        timer_countdown(turn_length, room)
     return ""
 
 
