@@ -128,11 +128,9 @@ def on_message(received_data):
     if urllib.parse.unquote(received_data['message_data']) == word: 
         # zmien hasla w bazie
         change_current_word(room)
+        change_users_score(username, room)
         change_drawer(room)
 
-        # dodaj punkty graczowi  
-        change_users_score(username, room)
-        # dodaj punkty rysującemu   
         # change_drawer_score(username, room) 
         emit('correct', {"word": word, 'username': username}, room=room)
     send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)

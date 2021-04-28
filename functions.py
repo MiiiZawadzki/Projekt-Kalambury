@@ -116,18 +116,24 @@ def add_user_to_db(username, room):
 
 def change_users_score(username, room):
     user_from_db = User.query.filter_by(room_id=room, username=username).first()
-    if user_from_db:
-        user_from_db.score += 10
-        db.session.commit()
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    drawer_from_db = User.query.filter_by(room_id=room, username=room_from_db.who_draws).first()
+    if room_from_db:
+        if user_from_db:
+            if drawer_from_db:
+                user_from_db.score += 10
+                drawer_from_db.score += 5
+                db.session.commit()
 
-"""
-def change_drawer_score(username, room):
-    user_from_db = User.query.filter_by(room_id=room, username=username).first()
-    drawer = Room.query.filter_by(who_draws=username)
-    if user_from_db.username==drawer.who_draws:
-        user_from_db.score +=5
-        db.session.commit()
-"""
+
+# def change_drawer_score(username, room):
+#     user_from_db = User.query.filter_by(room_id=room, username=username).first()
+
+#     drawer = Room.query.filter_by(who_draws=username)
+#     if user_from_db.username==drawer.who_draws:
+#         user_from_db.score +=5
+#         db.session.commit()
+
 
 # def timer_countdown(t, room): 
 #     while t:
