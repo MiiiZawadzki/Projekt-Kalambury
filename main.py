@@ -166,6 +166,13 @@ def on_draw(received_data):
     room = session['room_id']
     emit('draw', received_data, room=room)
 
+@socketio.on('clear')
+def clean(received_data):
+    room = session['room_id']
+    emit('clear', received_data, room=room)
+
+
+
 
 # run app
 if __name__ == '__main__':

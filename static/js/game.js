@@ -1,7 +1,8 @@
+var color = 'black', thickness = 16;
+
 $(function() {
-var flag, dot_flag = false,
-	prevX, prevY, currX, currY = 0,
-	color = 'black', thickness = 2;
+  var flag, dot_flag = false,
+	prevX, prevY, currX, currY = 0;
   var $canvas = $('#gameCanvas');
   var ctx = $canvas[0].getContext('2d');
 
@@ -20,17 +21,65 @@ var flag, dot_flag = false,
     }
     if (e.type == 'mousemove') {
       if (flag) {
-        socketIO.emit('draw', {'draw_data': [{"prevX":prevX, "prevY":prevY}, {"currX":currX, "currY":currY}]});
+        socketIO.emit('draw', {'draw_data': [{"prevX":prevX, "prevY":prevY}, {"currX":currX, "currY":currY}], 'color': color, 'thickness': thickness});
         ctx.beginPath();
         ctx.moveTo(prevX, prevY);
         ctx.lineTo(currX, currY);
         ctx.strokeStyle = color;
         ctx.lineWidth = thickness;
+        ctx.lineCap = "round";
         ctx.stroke();
         ctx.closePath();
       }
     }
   });
+
+  // switch color [green, blue, red, yellow, black, white]
+  $(".color-button").on('click', function(){
+    var color_value = $(this).attr("id");
+    switch (color_value) {
+        case "green":
+            color = "green";
+            break;
+        case "blue":
+            color = "blue";
+            break;
+        case "red":
+            color = "red";
+            break;
+        case "yellow":
+            color = "yellow";
+            break;
+        case "black":
+            color = "black";
+            break;
+        case "white":
+            color = "white";
+            break;
+    }
+});
+
+$("#clear").click(function () {
+    var $canvas = $('#gameCanvas');
+    var ctx = $canvas[0].getContext('2d');
+    ctx.clearRect(0, 0, 1000, 700);
+    socketIO.emit('clear',"clear")
+});
+
+$(".pencil-button").on('click', function(){
+    var t = $(this).attr("id");
+    switch (t) {
+        case "max-width":
+            thickness = 22;
+            break;
+        case "medium-width":
+            thickness = 16;
+            break;
+        case "small-width":
+            thickness = 12;
+            break;
+    }
+});
 
     // get username set in index.html
     user = sessionStorage.getItem("username");
@@ -73,13 +122,18 @@ var flag, dot_flag = false,
         messageWindow.scrollTop = messageWindow.scrollHeight;
     });
 
+    socketIO.on('clear', data => {
+        ctx.clearRect(0, 0, 1000, 700);   
+    });
+
     socketIO.on('draw', data => {
         if(data.draw_data){
             ctx.beginPath();
             ctx.moveTo(data.draw_data[0].prevX ,  data.draw_data[0].prevY );
             ctx.lineTo(data.draw_data[1].currX, data.draw_data[1].currY);
-            ctx.strokeStyle = color;
-            ctx.lineWidth = thickness;
+            ctx.strokeStyle = data.color;
+            ctx.lineWidth = data.thickness;
+            ctx.lineCap = "round";
             ctx.stroke();
             ctx.closePath();
         }
