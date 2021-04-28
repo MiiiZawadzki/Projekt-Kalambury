@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, session, request
+from flask import Flask, render_template, redirect, url_for, session, request,jsonify
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
 from secrets import secret_key
 from datetime import datetime
@@ -112,13 +112,9 @@ def start_game():
     room = session['room_id']
     if not game_in_room_started(room):
         change_current_word(room)
-
-        # Get turn length
         turn_length = get_turn_length(room)
-
-        # start timer
-        timer_countdown(turn_length, room)
-    return ""
+        # wywołać tu emita, żeby ustawić timer
+    return jsonify(word=return_current_word(room))
 
 
 # socketIO functions
@@ -170,9 +166,6 @@ def on_draw(received_data):
 def clean(received_data):
     room = session['room_id']
     emit('clear', received_data, room=room)
-
-
-
 
 # run app
 if __name__ == '__main__':

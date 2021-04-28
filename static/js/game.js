@@ -146,6 +146,7 @@ $(".pencil-button").on('click', function(){
             document.querySelector('#messageContainer').append(p);
     });
 
+
     // leave room
     $( "#backToApp" ).click(function() {
         var c = confirm("Are you sure you want to leave the room?");
@@ -156,8 +157,10 @@ $(".pencil-button").on('click', function(){
     });
     $('#startGame').on('click', function(e) {
         e.preventDefault()
-        $.getJSON('/start_game',
-            function(data) {
+        $.getJSON('/start_game',{
+            room_id: $('#room_id').text(),
+          }, function(data) {
+            $('#word').text(data.word);
         });
         return false;
     });
