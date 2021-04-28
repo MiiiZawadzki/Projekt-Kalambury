@@ -15,20 +15,11 @@
         <div class="middle-container">
             <form action="" method="post" novalidate class="joinForm form-container">
                 <div class="label-title ">
-                    Wprowadź nazwę
+                    Wystąpił błąd:
+                    {{ error_type }}
                 </div>
-                <div class="control has-icons-left ">
-                    {{ form.username(class_='input is-primary is-fullwidth is-medium', placeholder='Twoja nazwa')}}
-                    <span class="icon is-small is-left">
-                        <i class="fa fa-user"></i>
-                    </span>
-                </div>
-                {% for error in form.username.errors %}
-                <div class="help is-danger ">{{ error }}</div>
-                {% endfor %}
                 <div class="buttons">
-                    {{ form.submitJoin(class_='formFields button is-large is-fullwidth is-primary')}}
-                    <br> {{ form.submitCreate(class_='formFields button is-large is-fullwidth is-info')}} {{ form.csrf_token }}
+                    <input class="formFields button is-large is-fullwidth is-primary" type="button" onclick="location.href='/exit';" value="Wróć do strony głównej" />
                 </div>
 
             </form>

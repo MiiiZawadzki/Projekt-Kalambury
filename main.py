@@ -6,7 +6,7 @@ from forms import *
 import urllib.parse
 from functions import *
 from models import *
-from words import return_words_string
+from words import get_words_string
 
 # app config
 app = Flask(__name__)
@@ -48,13 +48,15 @@ def create_room():
     if create_form.validate_on_submit():
         turn_length = request.form["turn_length"]
         turn_count = request.form["turn_count"]
+        try:
+            words = get_words_string(int(turn_count))
+            room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length)
+            db.session.add(room)
+            db.session.commit()
+            return redirect(url_for('game'))
+        except ValueError:
+             return redirect(url_for('error', error_type="error"))
 
-        words = return_words_string()
-        room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length)
-        db.session.add(room)
-        db.session.commit()
-
-        return redirect(url_for('game'))
     return render_template("createRoom.html", form=create_form)
 
 
@@ -79,6 +81,13 @@ def game():
     return render_template("game.html", room_id=session['room_id'])
 
 
+# error route
+@app.route("/error/<error_type>", methods=['GET', 'POST'])
+def error(error_type):
+    return render_template("error.html", error_type=error_type)
+
+
+
 # join route
 @app.route('/join/<room_id>', methods=['GET', 'POST'])
 def join(room_id):
@@ -101,7 +110,14 @@ def Exit():
 @app.route('/start_game')
 def start_game():
     room = session['room_id']
-    change_current_word(room)
+    if not game_in_room_started(room):
+        change_current_word(room)
+
+        # Get turn length
+        turn_length = get_turn_length(room)
+
+        # start timer
+        timer_countdown(turn_length, room)
     return ""
 
 
@@ -113,11 +129,15 @@ def on_message(received_data):
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
     word = return_current_word(room)
-    if urllib.parse.unquote(received_data['message_data']) == word:
+    if urllib.parse.unquote(received_data['message_data']) == word: 
         # zmien hasla w bazie
-        # dodaj punkty graczowi
-        # + cala inna logika ktora trzeba zrobic
         change_current_word(room)
+        change_drawer(room)
+
+        # dodaj punkty graczowi  
+        change_users_score(username, room)
+        # dodaj punkty rysującemu   
+        # change_drawer_score(username, room) 
         emit('correct', {"word": word, 'username': username}, room=room)
     send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
 
@@ -145,6 +165,13 @@ def on_leave(received_data):
 def on_draw(received_data):
     room = session['room_id']
     emit('draw', received_data, room=room)
+
+@socketio.on('clear')
+def clean(received_data):
+    room = session['room_id']
+    emit('clear', received_data, room=room)
+
+
 
 
 # run app

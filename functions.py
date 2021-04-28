@@ -1,8 +1,9 @@
 from random import choice
 from string import ascii_letters, digits
-from models import Room
+from models import Room, User
 from models import db
 from random import randint
+import time
 
 
 def return_current_word(room):
@@ -40,26 +41,19 @@ def add_to_drawing_queue(username, room):
         data = {'drawing_queue': queue_string}
         db.session.query(Room).filter_by(room_id=room).update(data)
         db.session.commit()
-
+        
 
 def change_drawer(room):
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
-        curr_queue = room_from_db.drawing_queue
-        if len(curr_queue) != 0:
-            queue = curr_queue.split(';') 
-            new_drawer = queue.pop(0)
-            queue_string = ';'.join(queue)
-            data = {'drawing_queue': queue_string}
-            db.session.query(Room).filter_by(room_id=room).update(data)
-        else:
+        users = room_from_db.users
+        if users:
             curr_drawer = room_from_db.who_draws
-            users = room_from_db.users
             users_list = users.split(';')
             curr_drawer_index = users_list.index(curr_drawer)
-            new_drawer = users_list[curr_drawer_index + 1]
-        room_from_db.who_draws = new_drawer
-        db.session.commit()
+            new_drawer = users_list[(curr_drawer_index + 1) % len(users_list)]
+            room_from_db.who_draws = new_drawer
+            db.session.commit()
 
 
 def generate_room_id():
@@ -75,6 +69,7 @@ def generate_room_id():
 
 
 def delete_user_from_db(username, room):
+    # delete from rooms
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         users_list = room_from_db.users
@@ -92,8 +87,15 @@ def delete_user_from_db(username, room):
                 db.session.delete(room_from_db)
                 db.session.commit()
 
+    # delete from users
+    user_from_db = User.query.filter_by(room_id=room, username=username).first()
+    if user_from_db:
+        db.session.delete(user_from_db)
+        db.session.commit()
+
 
 def add_user_to_db(username, room):
+    # add to rooms
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         if room_from_db.users is None:
@@ -105,4 +107,45 @@ def add_user_to_db(username, room):
             data = {'users': users_list}
             db.session.query(Room).filter_by(room_id=room).update(data)
         db.session.commit()
+    
+    # add to users
+    user = User(room_id=room, username=username, score=0)
+    db.session.add(user)
+    db.session.commit()
 
+
+def change_users_score(username, room):
+    user_from_db = User.query.filter_by(room_id=room, username=username).first()
+    if user_from_db:
+        user_from_db.score += 10
+        db.session.commit()
+
+"""
+def change_drawer_score(username, room):
+    user_from_db = User.query.filter_by(room_id=room, username=username).first()
+    drawer = Room.query.filter_by(who_draws=username)
+    if user_from_db.username==drawer.who_draws:
+        user_from_db.score +=5
+        db.session.commit()
+"""
+
+def timer_countdown(t, room): 
+    while t:
+        if not Room.query.filter_by(room_id=room).first():
+            break
+        print(t, end=" \r")
+        time.sleep(1)
+        t -= 1
+    print("KONIEC CZASU")
+
+
+def get_turn_length(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        return int(room_from_db.turn_length)
+
+
+def game_in_room_started(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        return room_from_db.current_word != ""
