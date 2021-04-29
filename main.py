@@ -50,7 +50,7 @@ def create_room():
         turn_count = request.form["turn_count"]
         try:
             words = get_words_string(int(turn_count))
-            room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length)
+            room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length, game_state="ready_to_start")
             db.session.add(room)
             db.session.commit()
             return redirect(url_for('game'))
@@ -110,11 +110,10 @@ def Exit():
 @app.route('/start_game')
 def start_game():
     room = session['room_id']
-    if not game_in_room_started(room):
-        change_current_word(room)
-        turn_length = get_turn_length(room)
-        # wywołać tu emita, żeby ustawić timer
-        socketio.emit('startTimer', {"time": turn_length}, room=room)
+    change_current_word(room)
+    turn_length = get_turn_length(room)
+    socketio.emit('startTimer', {"time": turn_length}, room=room)
+    change_game_state(room,'game_in_progress')
     return jsonify(word=return_current_word(room))
 
 
@@ -131,7 +130,7 @@ def on_message(received_data):
         change_current_word(room)
         change_users_score(username, room)
         change_drawer(room)
-
+        change_game_state(room,'ready_to_start')
         # change_drawer_score(username, room) 
         emit('correct', {"word": word, 'username': username}, room=room)
     send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
@@ -165,6 +164,11 @@ def on_draw(received_data):
 def clean(received_data):
     room = session['room_id']
     emit('clear', received_data, room=room)
+
+@socketio.on('time_end')
+def time_end(received_data):
+    room = session['room_id']
+    change_game_state(room,'ready_to_start')
 
 # run app
 if __name__ == '__main__':

@@ -56,6 +56,14 @@ def change_drawer(room):
             db.session.commit()
 
 
+def change_game_state(room, game_state):
+    print(game_state)
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        room_from_db.game_state = game_state       
+        db.session.commit() 
+
+
 def generate_room_id():
     lettersAndDigits = ascii_letters + digits
     room_id = ''.join((choice(lettersAndDigits) for i in range(16)))

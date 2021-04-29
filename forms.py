@@ -11,6 +11,8 @@ def check_data(form, field):
     if room_from_db is not None:
         if session["username"] in room_from_db.users:
             raise ValidationError("Użytkownik o takiej nazwie już istnieje w tym pokoju")
+        if room_from_db.game_state != "ready_to_start":
+            raise ValidationError("Gra jest w trakcie rozgrywki, dołącz za chwile")
 
 
 # custom validator to check if room id is correct
@@ -29,8 +31,8 @@ class IndexForm(FlaskForm):
 
 # class including fields to join room
 class JoinRoomForm(FlaskForm):
-    room_id = StringField('pass_id', validators=[Length(min=16, max=16), check_room])
-    submit = SubmitField('Dołącz', validators=[check_data])
+    room_id = StringField('pass_id', validators=[Length(min=16, max=16), check_room, check_data])
+    submit = SubmitField('Dołącz')
 
 
 # class including fields to create room

@@ -1,5 +1,6 @@
 var color = 'black', thickness = 16;
-
+var timer = null;
+var timeEnd = false;
 $(function() {
   var flag, dot_flag = false,
 	prevX, prevY, currX, currY = 0;
@@ -144,12 +145,17 @@ $(".pencil-button").on('click', function(){
             p.innerHTML = "Brawo! użytkownik " + data["username"] + " odgadł hasło: "+ data["word"];
             p.classList.add("alertP");
             document.querySelector('#messageContainer').append(p);
+            console.log(timer);
+            clearInterval(timer); 
+            actionAfterTimerStopped();
+            timeEnd = true;
     });
 
     socketIO.on('startTimer', data => {
         if(data.time){
-            var timer = setInterval(startTimer, 1000);
-            setTimeout(() => { clearInterval(timer); actionAfterTimerStopped();}, data.time*1000);
+            timer = setInterval(startTimer, 1000);
+            timeEnd = false;
+            setTimeout(() => { clearInterval(timer); actionAfterTimerStopped(); timeEnd = true;}, data.time*1000);
             $('#timer').text(data.time);
         }
 
@@ -218,7 +224,10 @@ $(".pencil-button").on('click', function(){
     }
 
     function actionAfterTimerStopped(){
-        alert("Bomba na banię, kończymy balet")
+        if(timeEnd == false){
+            //alert("Bomba na banię, kończymy balet");
+            socketIO.emit('time_end', {'room': $('#room_id').text()});
+        }
     }
 });
 
