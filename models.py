@@ -15,6 +15,7 @@ class Room(db.Model):
     drawing_queue = db.Column(db.ARRAY(db.Text()))
     turn_count = db.Column(db.Integer(), nullable=False)
     turn_length = db.Column(db.Integer(), nullable=False)
+    game_state = db.Column(db.Text())
 
 # Room model
 class User(db.Model):
