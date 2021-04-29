@@ -225,7 +225,7 @@ $(".pencil-button").on('click', function(){
 
     function actionAfterTimerStopped(){
         if(timeEnd == false){
-            alert("Bomba na banię, kończymy balet");
+            //alert("Bomba na banię, kończymy balet");
             socketIO.emit('time_end', {'room': $('#room_id').text()});
         }
     }
