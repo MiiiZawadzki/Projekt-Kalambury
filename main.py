@@ -114,6 +114,7 @@ def start_game():
         change_current_word(room)
         turn_length = get_turn_length(room)
         # wywołać tu emita, żeby ustawić timer
+        socketio.emit('startTimer', {"time": turn_length}, room=room)
     return jsonify(word=return_current_word(room))
 
 

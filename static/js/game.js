@@ -146,6 +146,16 @@ $(".pencil-button").on('click', function(){
             document.querySelector('#messageContainer').append(p);
     });
 
+    socketIO.on('startTimer', data => {
+        if(data.time){
+            var timer = setInterval(startTimer, 1000);
+            setTimeout(() => { clearInterval(timer); actionAfterTimerStopped();}, data.time*1000);
+            $('#timer').text(data.time);
+        }
+
+        
+    });
+
 
     // leave room
     $( "#backToApp" ).click(function() {
@@ -200,6 +210,15 @@ $(".pencil-button").on('click', function(){
             document.querySelector('#messageContainer').append(p);
             $('#typedMessage').val("")
         }
+    }
+
+    function startTimer(){
+        var actual = $('#timer').text();
+        $('#timer').text(actual-1);
+    }
+
+    function actionAfterTimerStopped(){
+        alert("Bomba na banię, kończymy balet")
     }
 });
 
