@@ -266,19 +266,28 @@ html {
     width: 100%;
 }
 
+#clear {
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .pencils {
     display: flex;
     align-items: flex-end;
 }
 
-input[type="button"].color-button:focus,
-input[type="button"].color-button:active {
+input[type="button"].color-button:focus:not(#clear),
+input[type="button"].color-button:active:not(#clear) {
     transform: scale(1.15);
     margin-bottom: 10px;
 }
 
-input[type="button"]:hover {
+input[type="button"]:hover,
+button:hover {
     transform: scale(1.15);
+    cursor: pointer;
 }
 
 input[type="button"] {
