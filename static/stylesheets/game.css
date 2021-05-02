@@ -127,6 +127,7 @@ html {
     padding: 20px 20px;
     overflow-wrap: break-word;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .input-message-container {
@@ -264,6 +265,93 @@ html {
     overflow-y: auto;
     height: 80%;
     width: 100%;
+}
+
+.other-message-container {
+    margin-top: 15px;
+    display: flex;
+    width: 100%;
+    justify-content: start;
+    align-items: center;
+}
+
+.other-username-box {
+    position: absolute;
+    height: 15px;
+    top: -9px;
+    left: 5px;
+    background-color: rgba(84, 221, 251, 1);
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 15px;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 900;
+}
+
+.other-message {
+    position: relative;
+    background-color: rgba(103, 246, 255, 0.6);
+    padding-top: 5px;
+    min-width: 100px;
+    padding-bottom: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 5px;
+}
+
+.own-message-container {
+    margin-top: 15px;
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.own-username-box {
+    position: absolute;
+    height: 15px;
+    top: -9px;
+    right: 5px;
+    background-color: rgba(3, 238, 167, 1);
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 15px;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 900;
+}
+
+.own-message {
+    position: relative;
+    background-color: rgba(0, 255, 178, 0.6);
+    padding-top: 5px;
+    min-width: 100px;
+    padding-bottom: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 5px;
+}
+
+.alert-message {
+    width: 85%;
+    text-align: center;
+}
+
+.alert-message-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 112%;
+    margin-top: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    background-color: rgba(255, 230, 105, 0.8);
+    transform: translateX(-30px);
 }
 
 #clear {

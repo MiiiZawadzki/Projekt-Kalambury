@@ -107,10 +107,14 @@ $(function() {
     socketIO.on("message", (data) => {
         // display alerts
         if (data.alert) {
-            const p = document.createElement("p");
-            p.innerHTML = data.alert;
-            p.classList.add("alertP");
-            document.querySelector("#messageContainer").append(p);
+            const alertDiv = document.createElement("div");
+            alertDiv.classList.add("alert-message-container");
+            const alertInnerDiv = document.createElement("div");
+            alertInnerDiv.classList.add("alert-message");
+            alertInnerDiv.innerHTML = data.alert;
+
+            alertDiv.appendChild(alertInnerDiv);
+            document.querySelector("#messageContainer").append(alertDiv);
         }
         // display incoming messages
         if (data.message_data) {
@@ -121,10 +125,15 @@ $(function() {
                 outerDiv.classList.add("own-message-container");
                 const innerOwnDiv = document.createElement("div");
                 innerOwnDiv.classList.add("own-message");
-                innerDiv.innerHTML = decodeURIComponent(
-                    "<b>You</b> (" + data.time + "): " + data.message_data
+                innerOwnDiv.innerHTML = decodeURIComponent(
+                    "(" + data.time + "): " + data.message_data
                 );
-                outerDiv.appendChild(innerOwnDiv);
+                const usernameBox = document.createElement("div");
+                usernameBox.classList.add("own-username-box");
+                usernameBox.innerHTML = data.username;
+                innerOwnDiv.appendChild(usernameBox);
+
+                outerDiv.appendChild(innerOtherDiv);
                 document.querySelector("#messageContainer").append(outerDiv);
             }
             // display others messages
@@ -133,8 +142,13 @@ $(function() {
                 const innerOtherDiv = document.createElement("div");
                 innerOtherDiv.classList.add("other-message");
                 innerOtherDiv.innerHTML = decodeURIComponent(
-                    data.username + " (" + data.time + "): " + data.message_data
+                    "(" + data.time + "): " + data.message_data
                 );
+                const usernameBox = document.createElement("div");
+                usernameBox.classList.add("other-username-box");
+                usernameBox.innerHTML = data.username;
+                innerOtherDiv.appendChild(usernameBox);
+
                 outerDiv.appendChild(innerOtherDiv);
                 document.querySelector("#messageContainer").append(outerDiv);
             }
@@ -163,15 +177,20 @@ $(function() {
     });
 
     socketIO.on("correct", (data) => {
-        const p = document.createElement("p");
-        p.innerHTML =
+        const alertDiv = document.createElement("div");
+        alertDiv.classList.add("alert-message-container");
+        const alertInnerDiv = document.createElement("div");
+        alertInnerDiv.classList.add("alert-message");
+        alertDiv.style.backgroundColor = "rgba(82, 255, 0, 0.8)";
+        alertInnerDiv.innerHTML =
             "Brawo! użytkownik " +
-            data["username"] +
-            " odgadł hasło: " +
-            data["word"];
-        p.classList.add("alertP");
-        document.querySelector("#messageContainer").append(p);
-        console.log(timer);
+            data["username"].bold() +
+            " odgadł hasło:<br>" +
+            data["word"].italics();
+
+        alertDiv.appendChild(alertInnerDiv);
+        document.querySelector("#messageContainer").append(alertDiv);
+
         clearInterval(timer);
         actionAfterTimerStopped();
         timeEnd = true;
