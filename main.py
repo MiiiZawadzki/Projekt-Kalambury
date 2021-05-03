@@ -121,6 +121,18 @@ def start_game():
     return jsonify(word="...")
 
 
+@app.route('/start_draw')
+def start_draw():
+    room = session['room_id']
+    if check_game_state(room) == "ready_to_next_round":
+        change_current_word(room)
+        turn_length = get_turn_length(room)
+        socketio.emit('start_timer', {"time": turn_length}, room=room)
+        change_game_state(room,'game_in_progress')
+        return jsonify(word=return_current_word(room))
+    return jsonify(word="...")
+
+
 # socketIO functions
 @socketio.on('message')
 def on_message(received_data):
@@ -131,12 +143,14 @@ def on_message(received_data):
     word = return_current_word(room)
     if urllib.parse.unquote(received_data['message_data']) == word: 
         # zmien hasla w bazie
-        change_current_word(room)
         change_users_score(username, room)
-        change_drawer(room)
-        change_game_state(room,'ready_to_start')
+        change_game_state(room,'ready_to_next_round')
         # change_drawer_score(username, room) 
         emit('correct', {"word": word, 'username': username}, room=room)
+
+        # change drawer and start game
+        change_drawer(room)
+        socketio.emit('who_draws', {"username": return_drawer_username(room)}, room=room)
     send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
 
 
@@ -171,10 +185,21 @@ def clean(received_data):
 
 @socketio.on('time_end')
 def time_end(received_data):
-    room = session['room_id']
-    if check_game_state(room) != "ready_to_start":
+    room = received_data["room"]
+    sender = received_data["sender"]
+    if check_game_state(room) != "ready_to_next_round" and sender == return_admin_username(room):
         emit('time_is_over',  {"word": return_current_word(room)}, room=room)
-        change_game_state(room,'ready_to_start')
+        change_game_state(room,'ready_to_next_round')
+        change_drawer(room)
+        socketio.emit('who_draws', {"username": return_drawer_username(room)}, room=room)
+
+
+@socketio.on('end_game')
+def end_game(received_data):
+    room = received_data["room"]
+    sender = received_data["sender"]
+    if sender == return_admin_username(room):
+        emit('stop_game',  {"winner": return_admin_username(room)}, room=room)
 
 # run app
 if __name__ == '__main__':

@@ -95,7 +95,7 @@ $(function() {
 
     // get username set in index.html
     let user = sessionStorage.getItem("username");
-    console.log(user);
+
     // connect with socket.io
     //    var socketIO = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
     var socketIO = io.connect("http://" + document.domain + ":" + location.port);
@@ -192,19 +192,12 @@ $(function() {
         document.querySelector("#messageContainer").append(alertDiv);
 
         clearInterval(timer);
-        actionAfterTimerStopped();
-        timeEnd = true;
     });
 
     socketIO.on("start_timer", (data) => {
+        clearInterval(timer);
         if (data.time) {
             timer = setInterval(startTimer, 1000);
-            timeEnd = false;
-            setTimeout(() => {
-                clearInterval(timer);
-                actionAfterTimerStopped();
-                timeEnd = true;
-            }, data.time * 1000);
             $("#timer").text(data.time);
         }
     });
@@ -222,6 +215,40 @@ $(function() {
         }
     });
 
+    socketIO.on("who_draws", (data) => {
+        if (data.username) {
+            $("#drawer").text(data.username);
+            if(user == data.username){
+                $.getJSON('/start_draw', function(data) {
+                    if(data.word == "Skończyły się"){
+                        socketIO.emit("end_game", { room: $("#room_id").text(), sender: user});
+                    }
+                    else{
+                        $('#word').text(data.word);
+                    }
+                });
+                return false;
+            }
+            else{
+                $('#word').text("...");
+            }
+        }
+    });
+
+    socketIO.on("stop_game", (data) => {
+        if (data.winner) {
+           clearInterval(timer);
+           const alertDiv = document.createElement("div");
+           alertDiv.classList.add("alert-message-container");
+           const alertInnerDiv = document.createElement("div");
+           alertInnerDiv.classList.add("alert-message");
+           alertInnerDiv.innerHTML = "Gra dobiegła końca, wygrał "+data.winner;
+
+           alertDiv.appendChild(alertInnerDiv);
+           document.querySelector("#messageContainer").append(alertDiv);
+        }
+    });
+
     // leave room
     $("#backToApp").click(function() {
         var c = confirm("Are you sure you want to leave the room?");
@@ -230,6 +257,7 @@ $(function() {
             location.href = "/exit";
         }
     });
+    
     $("#startGame").on("click", function(e) {
         e.preventDefault();
         $.getJSON(
@@ -283,13 +311,20 @@ $(function() {
 
     function startTimer() {
         var actual = $("#timer").text();
-        $("#timer").text(actual - 1);
+        if (actual!=0){
+            $("#timer").text(actual - 1);
+        }
+        else{
+            clearInterval(timer);
+            socketIO.emit("time_end", { room: $("#room_id").text(), sender: user});
+        }
+        
     }
 
-    function actionAfterTimerStopped() {
-        if (timeEnd == false) {
-            //alert("Bomba na banię, kończymy balet");
-            socketIO.emit("time_end", { room: $("#room_id").text() });
-        }
-    }
+    // function actionAfterTimerStopped() {
+    //     if (timeEnd == false) {
+    //         //alert("Bomba na banię, kończymy balet");
+    //         socketIO.emit("time_end", { room: $("#room_id").text() });
+    //     }
+    // }
 });
