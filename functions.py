@@ -165,3 +165,20 @@ def game_in_room_started(room):
     if room_from_db:
         return room_from_db.current_word != ""
 
+
+def check_game_state(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        return room_from_db.game_state
+
+
+def return_admin_username(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        return room_from_db.admin_username
+
+
+def return_drawer_username(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        return room_from_db.who_draws

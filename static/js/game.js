@@ -196,7 +196,7 @@ $(function() {
         timeEnd = true;
     });
 
-    socketIO.on("startTimer", (data) => {
+    socketIO.on("start_timer", (data) => {
         if (data.time) {
             timer = setInterval(startTimer, 1000);
             timeEnd = false;
@@ -222,6 +222,7 @@ $(function() {
         $.getJSON(
             "/start_game", {
                 room_id: $("#room_id").text(),
+                username: user
             },
             function(data) {
                 $("#word").text(data.word);
