@@ -19,7 +19,7 @@ words = [
     "Gość w dom, Bóg w dom",
     "Nie wywołuj wilka z lasu",
     "Czuć się jak ryba w wodzie",
-    'Nie czyń drugiemu, co tobie niemiłe.'
+    "Nie czyń drugiemu, co tobie niemiłe",
     "Nauka nie poszła w las",
     "Strach ma wielkie oczy",
     "Tonący brzytwy się chwyta",
