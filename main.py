@@ -172,7 +172,9 @@ def clean(received_data):
 @socketio.on('time_end')
 def time_end(received_data):
     room = session['room_id']
-    change_game_state(room,'ready_to_start')
+    if check_game_state(room) != "ready_to_start":
+        emit('time_is_over',  {"word": return_current_word(room)}, room=room)
+        change_game_state(room,'ready_to_start')
 
 # run app
 if __name__ == '__main__':

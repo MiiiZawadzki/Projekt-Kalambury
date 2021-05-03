@@ -209,6 +209,19 @@ $(function() {
         }
     });
 
+    socketIO.on("time_is_over", (data) => {
+        if (data.word) {
+            const alertDiv = document.createElement("div");
+            alertDiv.classList.add("alert-message-container");
+            const alertInnerDiv = document.createElement("div");
+            alertInnerDiv.classList.add("alert-message");
+            alertInnerDiv.innerHTML = "Czas sie skończył, hasłem było: "+data.word;
+
+            alertDiv.appendChild(alertInnerDiv);
+            document.querySelector("#messageContainer").append(alertDiv);
+        }
+    });
+
     // leave room
     $("#backToApp").click(function() {
         var c = confirm("Are you sure you want to leave the room?");
