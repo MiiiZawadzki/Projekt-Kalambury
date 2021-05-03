@@ -95,7 +95,7 @@ $(function() {
 
     // get username set in index.html
     let user = sessionStorage.getItem("username");
-
+    var who_draws = "";
     // connect with socket.io
     //    var socketIO = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
     var socketIO = io.connect("http://" + document.domain + ":" + location.port);
@@ -218,8 +218,10 @@ $(function() {
     socketIO.on("who_draws", (data) => {
         if (data.username) {
             $("#drawer").text(data.username);
+
             if(user == data.username){
                 $.getJSON('/start_draw', function(data) {
+                    console.log(data);
                     if(data.word == "Skończyły się"){
                         socketIO.emit("end_game", { room: $("#room_id").text(), sender: user});
                     }
