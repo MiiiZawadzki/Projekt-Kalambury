@@ -193,8 +193,7 @@ def time_end(received_data):
 def end_game(received_data):
     room = received_data["room"]
     sender = received_data["sender"]
-    if sender == return_admin_username(room):
-        emit('stop_game',  {"winner": return_admin_username(room)}, room=room)
+    emit('stop_game',  {"winner": return_admin_username(room)}, room=room)
 
 # run app
 if __name__ == '__main__':
