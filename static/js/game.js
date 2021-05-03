@@ -94,8 +94,8 @@ $(function() {
     });
 
     // get username set in index.html
-    user = sessionStorage.getItem("username");
-
+    let user = sessionStorage.getItem("username");
+    console.log(user);
     // connect with socket.io
     //    var socketIO = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
     var socketIO = io.connect("http://" + document.domain + ":" + location.port);
@@ -133,7 +133,7 @@ $(function() {
                 usernameBox.innerHTML = data.username;
                 innerOwnDiv.appendChild(usernameBox);
 
-                outerDiv.appendChild(innerOtherDiv);
+                outerDiv.appendChild(innerOwnDiv);
                 document.querySelector("#messageContainer").append(outerDiv);
             }
             // display others messages
