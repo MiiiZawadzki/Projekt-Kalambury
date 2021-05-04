@@ -2,7 +2,7 @@ var color = "black",
     thickness = 16;
 var timer = null;
 var timeEnd = false;
-$(function () {
+$(function() {
     var flag,
         dot_flag = false,
         prevX,
@@ -12,7 +12,7 @@ $(function () {
     var $canvas = $("#gameCanvas");
     var ctx = $canvas[0].getContext("2d");
 
-    $canvas.on("mousemove mousedown mouseup mouseout", function (e) {
+    $canvas.on("mousemove mousedown mouseup mouseout", function(e) {
         if (user == who_draws) {
             prevX = currX;
             prevY = currY;
@@ -34,7 +34,7 @@ $(function () {
                         ],
                         color: color,
                         thickness: thickness,
-                        user: user, 
+                        user: user,
                         who_draws: who_draws,
                     });
                     ctx.beginPath();
@@ -51,7 +51,7 @@ $(function () {
     });
 
     // switch color [green, blue, red, yellow, black, white]
-    $(".color-button").on("click", function () {
+    $(".color-button").on("click", function() {
         var color_value = $(this).attr("id");
         console.log(who_draws);
         switch (color_value) {
@@ -76,19 +76,19 @@ $(function () {
         }
     });
 
-    $("#clear").click(function () {
+    $("#clear").click(function() {
         if (user == who_draws) {
             var $canvas = $("#gameCanvas");
             var ctx = $canvas[0].getContext("2d");
             ctx.clearRect(0, 0, 1000, 700);
             socketIO.emit("clear", {
-                user: user, 
+                user: user,
                 who_draws: who_draws,
             });
         }
     });
 
-    $(".pencil-button").on("click", function () {
+    $(".pencil-button").on("click", function() {
         var t = $(this).attr("id");
         switch (t) {
             case "max-width":
@@ -170,14 +170,14 @@ $(function () {
     });
 
     socketIO.on("clear", (data) => {
-        if(data.user==data.who_draws){
+        if (data.user == data.who_draws) {
             ctx.clearRect(0, 0, 1000, 700);
         }
     });
 
     socketIO.on("draw", (data) => {
         if (data.draw_data) {
-            if(data.user==data.who_draws){
+            if (data.user == data.who_draws) {
                 ctx.beginPath();
                 ctx.moveTo(data.draw_data[0].prevX, data.draw_data[0].prevY);
                 ctx.lineTo(data.draw_data[1].currX, data.draw_data[1].currY);
@@ -222,8 +222,9 @@ $(function () {
             alertDiv.classList.add("alert-message-container");
             const alertInnerDiv = document.createElement("div");
             alertInnerDiv.classList.add("alert-message");
-            alertInnerDiv.innerHTML = "Czas sie skończył, hasłem było: " + data.word;
-
+            alertDiv.style.backgroundColor = "rgba(255, 134, 125, 0.8)";
+            alertInnerDiv.innerHTML =
+                "Czas się skończył! hasłem było: <br>" + data.word.italics();
             alertDiv.appendChild(alertInnerDiv);
             document.querySelector("#messageContainer").append(alertDiv);
         }
@@ -234,24 +235,31 @@ $(function () {
             $("#drawer").text(data.username);
             who_draws = data.username;
             if (user == data.username) {
-                $.getJSON('/get_word', {
-                    room_id: $("#room_id").text()
-                }, function (data) {
-                    if (data.word == "Skończyły się") {
-                        socketIO.emit("end_game", { room: $("#room_id").text(), sender: user });
+                $.getJSON(
+                    "/get_word", {
+                        room_id: $("#room_id").text(),
+                    },
+                    function(data) {
+                        if (data.word == "Skończyły się") {
+                            socketIO.emit("end_game", {
+                                room: $("#room_id").text(),
+                                sender: user,
+                            });
+                        } else {
+                            $("#word").text(data.word);
+                        }
                     }
-                    else {
-                        $('#word').text(data.word);
-                    }
-                });
-                $('.colors-container').css('visibility', 'visible');
-                $('.pencils-container').css('visibility', 'visible');
+                );
+                $(".word-container").css("visibility", "visible");
+                $(".colors-container").css("visibility", "visible");
+                $(".pencils-container").css("visibility", "visible");
+                $("#typedMessage").attr("disabled", true);
                 return false;
-            }
-            else {
-                $('#word').text("...");
-                $('.colors-container').css('visibility', 'hidden');
-                $('.pencils-container').css('visibility', 'hidden');
+            } else {
+                $(".word-container").css("visibility", "hidden");
+                $(".colors-container").css("visibility", "hidden");
+                $(".pencils-container").css("visibility", "hidden");
+                $("#typedMessage").prop("disabled", false);
             }
         }
     });
@@ -271,7 +279,7 @@ $(function () {
     });
 
     // leave room
-    $("#backToApp").click(function () {
+    $("#backToApp").click(function() {
         var c = confirm("Are you sure you want to leave the room?");
         if (c == true) {
             socketIO.emit("leave", "leave");
@@ -279,14 +287,14 @@ $(function () {
         }
     });
 
-    $("#startGame").on("click", function (e) {
+    $("#startGame").on("click", function(e) {
         e.preventDefault();
         $.getJSON(
             "/start_game", {
-            room_id: $("#room_id").text(),
-            username: user
-        },
-            function (data) {
+                room_id: $("#room_id").text(),
+                username: user,
+            },
+            function(data) {
                 $("#word").text(data.word);
             }
         );
@@ -294,18 +302,18 @@ $(function () {
     });
 
     // emit leave when closing tab
-    window.addEventListener("beforeunload", function (e) {
+    window.addEventListener("beforeunload", function(e) {
         socketIO.emit("leave", "leave");
     });
 
     // send message after click on button
-    $("#sendButton").click(function () {
+    $("#sendButton").click(function() {
         sendMessage();
     });
 
     // send message on enter hit
     var inputField = document.getElementById("typedMessage");
-    inputField.addEventListener("keyup", function (event) {
+    inputField.addEventListener("keyup", function(event) {
         // keyCode 13 == Enter
         if (event.keyCode === 13) {
             sendMessage();
@@ -334,12 +342,10 @@ $(function () {
         var actual = $("#timer").text();
         if (actual != 0) {
             $("#timer").text(actual - 1);
-        }
-        else {
+        } else {
             clearInterval(timer);
             socketIO.emit("time_end", { room: $("#room_id").text(), sender: user });
         }
-
     }
 
     // function actionAfterTimerStopped() {
