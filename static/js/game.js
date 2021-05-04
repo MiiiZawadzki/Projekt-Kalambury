@@ -2,7 +2,7 @@ var color = "black",
     thickness = 16;
 var timer = null;
 var timeEnd = false;
-$(function() {
+$(function () {
     var flag,
         dot_flag = false,
         prevX,
@@ -12,43 +12,48 @@ $(function() {
     var $canvas = $("#gameCanvas");
     var ctx = $canvas[0].getContext("2d");
 
-    $canvas.on("mousemove mousedown mouseup mouseout", function(e) {
-        prevX = currX;
-        prevY = currY;
-        currX = e.clientX - $canvas.offset().left;
-        currY = e.clientY - $canvas.offset().top;
+    $canvas.on("mousemove mousedown mouseup mouseout", function (e) {
+        if (user == who_draws) {
+            prevX = currX;
+            prevY = currY;
+            currX = e.clientX - $canvas.offset().left;
+            currY = e.clientY - $canvas.offset().top;
 
-        if (e.type == "mousedown") {
-            flag = true;
-        }
-        if (e.type == "mouseup" || e.type == "mouseout") {
-            flag = false;
-        }
-        if (e.type == "mousemove") {
-            if (flag) {
-                socketIO.emit("draw", {
-                    draw_data: [
-                        { prevX: prevX, prevY: prevY },
-                        { currX: currX, currY: currY },
-                    ],
-                    color: color,
-                    thickness: thickness,
-                });
-                ctx.beginPath();
-                ctx.moveTo(prevX, prevY);
-                ctx.lineTo(currX, currY);
-                ctx.strokeStyle = color;
-                ctx.lineWidth = thickness;
-                ctx.lineCap = "round";
-                ctx.stroke();
-                ctx.closePath();
+            if (e.type == "mousedown") {
+                flag = true;
+            }
+            if (e.type == "mouseup" || e.type == "mouseout") {
+                flag = false;
+            }
+            if (e.type == "mousemove") {
+                if (flag) {
+                    socketIO.emit("draw", {
+                        draw_data: [
+                            { prevX: prevX, prevY: prevY },
+                            { currX: currX, currY: currY },
+                        ],
+                        color: color,
+                        thickness: thickness,
+                        user: user, 
+                        who_draws: who_draws,
+                    });
+                    ctx.beginPath();
+                    ctx.moveTo(prevX, prevY);
+                    ctx.lineTo(currX, currY);
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = thickness;
+                    ctx.lineCap = "round";
+                    ctx.stroke();
+                    ctx.closePath();
+                }
             }
         }
     });
 
     // switch color [green, blue, red, yellow, black, white]
-    $(".color-button").on("click", function() {
+    $(".color-button").on("click", function () {
         var color_value = $(this).attr("id");
+        console.log(who_draws);
         switch (color_value) {
             case "green":
                 color = "green";
@@ -71,14 +76,19 @@ $(function() {
         }
     });
 
-    $("#clear").click(function() {
-        var $canvas = $("#gameCanvas");
-        var ctx = $canvas[0].getContext("2d");
-        ctx.clearRect(0, 0, 1000, 700);
-        socketIO.emit("clear", "clear");
+    $("#clear").click(function () {
+        if (user == who_draws) {
+            var $canvas = $("#gameCanvas");
+            var ctx = $canvas[0].getContext("2d");
+            ctx.clearRect(0, 0, 1000, 700);
+            socketIO.emit("clear", {
+                user: user, 
+                who_draws: who_draws,
+            });
+        }
     });
 
-    $(".pencil-button").on("click", function() {
+    $(".pencil-button").on("click", function () {
         var t = $(this).attr("id");
         switch (t) {
             case "max-width":
@@ -160,19 +170,23 @@ $(function() {
     });
 
     socketIO.on("clear", (data) => {
-        ctx.clearRect(0, 0, 1000, 700);
+        if(data.user==data.who_draws){
+            ctx.clearRect(0, 0, 1000, 700);
+        }
     });
 
     socketIO.on("draw", (data) => {
         if (data.draw_data) {
-            ctx.beginPath();
-            ctx.moveTo(data.draw_data[0].prevX, data.draw_data[0].prevY);
-            ctx.lineTo(data.draw_data[1].currX, data.draw_data[1].currY);
-            ctx.strokeStyle = data.color;
-            ctx.lineWidth = data.thickness;
-            ctx.lineCap = "round";
-            ctx.stroke();
-            ctx.closePath();
+            if(data.user==data.who_draws){
+                ctx.beginPath();
+                ctx.moveTo(data.draw_data[0].prevX, data.draw_data[0].prevY);
+                ctx.lineTo(data.draw_data[1].currX, data.draw_data[1].currY);
+                ctx.strokeStyle = data.color;
+                ctx.lineWidth = data.thickness;
+                ctx.lineCap = "round";
+                ctx.stroke();
+                ctx.closePath();
+            }
         }
     });
 
@@ -208,7 +222,7 @@ $(function() {
             alertDiv.classList.add("alert-message-container");
             const alertInnerDiv = document.createElement("div");
             alertInnerDiv.classList.add("alert-message");
-            alertInnerDiv.innerHTML = "Czas sie skończył, hasłem było: "+data.word;
+            alertInnerDiv.innerHTML = "Czas sie skończył, hasłem było: " + data.word;
 
             alertDiv.appendChild(alertInnerDiv);
             document.querySelector("#messageContainer").append(alertDiv);
@@ -218,56 +232,60 @@ $(function() {
     socketIO.on("who_draws", (data) => {
         if (data.username) {
             $("#drawer").text(data.username);
-
-            if(user == data.username){
-                $.getJSON('/start_draw', function(data) {
-                    console.log(data);
-                    if(data.word == "Skończyły się"){
-                        socketIO.emit("end_game", { room: $("#room_id").text(), sender: user});
+            who_draws = data.username;
+            console.log(who_draws);
+            if (user == data.username) {
+                $.getJSON('/start_draw', function (data) {
+                    if (data.word == "Skończyły się") {
+                        socketIO.emit("end_game", { room: $("#room_id").text(), sender: user });
                     }
-                    else{
+                    else {
                         $('#word').text(data.word);
                     }
                 });
+                $('.colors-container').css('visibility', 'visible');
+                $('.pencils-container').css('visibility', 'visible');
                 return false;
             }
-            else{
+            else {
                 $('#word').text("...");
+                $('.colors-container').css('visibility', 'hidden');
+                $('.pencils-container').css('visibility', 'hidden');
             }
         }
     });
 
     socketIO.on("stop_game", (data) => {
         if (data.winner) {
-           clearInterval(timer);
-           const alertDiv = document.createElement("div");
-           alertDiv.classList.add("alert-message-container");
-           const alertInnerDiv = document.createElement("div");
-           alertInnerDiv.classList.add("alert-message");
-           alertInnerDiv.innerHTML = "Gra dobiegła końca, wygrał "+data.winner;
+            clearInterval(timer);
+            const alertDiv = document.createElement("div");
+            alertDiv.classList.add("alert-message-container");
+            const alertInnerDiv = document.createElement("div");
+            alertInnerDiv.classList.add("alert-message");
+            alertInnerDiv.innerHTML = "Gra dobiegła końca, wygrał " + data.winner;
 
-           alertDiv.appendChild(alertInnerDiv);
-           document.querySelector("#messageContainer").append(alertDiv);
+            alertDiv.appendChild(alertInnerDiv);
+            document.querySelector("#messageContainer").append(alertDiv);
         }
     });
 
     // leave room
-    $("#backToApp").click(function() {
+    $("#backToApp").click(function () {
         var c = confirm("Are you sure you want to leave the room?");
         if (c == true) {
             socketIO.emit("leave", "leave");
             location.href = "/exit";
         }
     });
-    
-    $("#startGame").on("click", function(e) {
+
+    $("#startGame").on("click", function (e) {
         e.preventDefault();
         $.getJSON(
             "/start_game", {
-                room_id: $("#room_id").text(),
-                username: user
-            },
-            function(data) {
+            room_id: $("#room_id").text(),
+            username: user
+        },
+            function (data) {
                 $("#word").text(data.word);
             }
         );
@@ -275,18 +293,18 @@ $(function() {
     });
 
     // emit leave when closing tab
-    window.addEventListener("beforeunload", function(e) {
+    window.addEventListener("beforeunload", function (e) {
         socketIO.emit("leave", "leave");
     });
 
     // send message after click on button
-    $("#sendButton").click(function() {
+    $("#sendButton").click(function () {
         sendMessage();
     });
 
     // send message on enter hit
     var inputField = document.getElementById("typedMessage");
-    inputField.addEventListener("keyup", function(event) {
+    inputField.addEventListener("keyup", function (event) {
         // keyCode 13 == Enter
         if (event.keyCode === 13) {
             sendMessage();
@@ -313,14 +331,14 @@ $(function() {
 
     function startTimer() {
         var actual = $("#timer").text();
-        if (actual!=0){
+        if (actual != 0) {
             $("#timer").text(actual - 1);
         }
-        else{
+        else {
             clearInterval(timer);
-            socketIO.emit("time_end", { room: $("#room_id").text(), sender: user});
+            socketIO.emit("time_end", { room: $("#room_id").text(), sender: user });
         }
-        
+
     }
 
     // function actionAfterTimerStopped() {
