@@ -233,9 +233,10 @@ $(function () {
         if (data.username) {
             $("#drawer").text(data.username);
             who_draws = data.username;
-            console.log(who_draws);
             if (user == data.username) {
-                $.getJSON('/start_draw', function (data) {
+                $.getJSON('/get_word', {
+                    room_id: $("#room_id").text()
+                }, function (data) {
                     if (data.word == "Skończyły się") {
                         socketIO.emit("end_game", { room: $("#room_id").text(), sender: user });
                     }
