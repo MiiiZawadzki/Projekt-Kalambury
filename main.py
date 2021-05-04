@@ -50,7 +50,7 @@ def create_room():
         turn_count = request.form["turn_count"]
         try:
             words = get_words_string(int(turn_count))
-            room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length, game_state="ready_to_start")
+            room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length, game_state="game_ready")
             db.session.add(room)
             db.session.commit()
             return redirect(url_for('game'))
@@ -106,14 +106,23 @@ def Exit():
     return redirect(url_for('index'))
 
 
-# background processes
+### background processes
+
+# click on the start button
 @app.route('/start_game')
 def start_game():
     room = session['room_id']
-    change_current_word(room)
-    turn_length = get_turn_length(room)
-    socketio.emit('startTimer', {"time": turn_length}, room=room)
-    change_game_state(room,'game_in_progress')
+    if check_game_state(room) == "game_ready":
+        username = request.args.get('username', 0, type=str)
+        if return_admin_username(room) == username:
+            prepare_round_for_room(room)
+    return jsonify(word="...")
+
+
+# route which is used by user who draws to get the word
+@app.route('/get_word')
+def get_word():
+    room = request.args.get('room_id', 0, type=str)
     return jsonify(word=return_current_word(room))
 
 
@@ -127,12 +136,13 @@ def on_message(received_data):
     word = return_current_word(room)
     if urllib.parse.unquote(received_data['message_data']) == word: 
         # zmien hasla w bazie
-        change_current_word(room)
         change_users_score(username, room)
-        change_drawer(room)
-        change_game_state(room,'ready_to_start')
+        change_game_state(room,'ready_to_next_round')
         # change_drawer_score(username, room) 
         emit('correct', {"word": word, 'username': username}, room=room)
+
+        # change drawer and start game
+        prepare_round_for_room(room)
     send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
 
 
@@ -167,8 +177,39 @@ def clean(received_data):
 
 @socketio.on('time_end')
 def time_end(received_data):
-    room = session['room_id']
-    change_game_state(room,'ready_to_start')
+    room = received_data["room"]
+    sender = received_data["sender"]
+    if check_game_state(room) != "ready_to_next_round" and sender == return_admin_username(room):
+        emit('time_is_over',  {"word": return_current_word(room)}, room=room)
+        prepare_round_for_room(room)
+
+
+@socketio.on('end_game')
+def end_game(received_data):
+    room = received_data["room"]
+    sender = received_data["sender"]
+    emit('stop_game',  {"winner": return_admin_username(room)}, room=room)
+
+
+def prepare_round_for_room(room):
+
+    change_drawer(room)
+
+    change_current_word(room)
+
+    # start timer
+    turn_length = get_turn_length(room)
+    socketio.emit('start_timer', {"time": turn_length}, room=room)
+
+    # change game state
+    change_game_state(room,'game_in_progress')
+
+    # send emit to the user who draws this round
+    socketio.emit('who_draws', {"username": return_drawer_username(room)}, room=room)
+
+    # clear canvas
+    socketio.emit('clear', "", room=room)
+
 
 # run app
 if __name__ == '__main__':
