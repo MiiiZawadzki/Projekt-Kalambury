@@ -50,7 +50,7 @@ def create_room():
         turn_count = request.form["turn_count"]
         try:
             words = get_words_string(int(turn_count))
-            room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length, game_state="game_ready")
+            room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws="", turn_count=turn_count, turn_length=turn_length, game_state="game_ready")
             db.session.add(room)
             db.session.commit()
             return redirect(url_for('game'))
