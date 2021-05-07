@@ -134,7 +134,9 @@ def on_message(received_data):
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
     word = return_current_word(room)
-    if urllib.parse.unquote(received_data['message_data']) == word: 
+    if username == return_drawer_username(room):
+        return
+    if urllib.parse.unquote(received_data['message_data']) == word: # and game_state != "game_paused": 
         # zmien hasla w bazie
         change_users_score(username, room)
         change_game_state(room,'ready_to_next_round')
@@ -171,6 +173,9 @@ def on_leave(received_data):
 @socketio.on('draw')
 def on_draw(received_data):
     room = session['room_id']
+    username = session['username']
+    if username != return_drawer_username(room):
+        return
     emit('draw', received_data, room=room)
 
 @socketio.on('clear')
