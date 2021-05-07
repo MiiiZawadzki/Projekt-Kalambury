@@ -280,6 +280,11 @@ $(function () {
     }
   });
 
+  socketIO.on("kick_all", (data) => {
+    alert("admin opuścił pokój - gra została przerwana");
+    location.href = "/error/admin_left_room";
+  });
+
   // leave room
   $("#backToApp").click(function () {
     var c = confirm("Are you sure you want to leave the room?");

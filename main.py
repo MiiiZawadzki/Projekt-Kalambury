@@ -159,10 +159,13 @@ def on_join(received_data):
 def on_leave(received_data):
     username = session['username']
     room = session['room_id']
-    leave_room(room)
-    session.pop('room_id', None)
-    delete_user_from_db(username, room)
-    send({'alert': username + ' opuścił pokój.'}, room=room)
+    if username == return_admin_username(room):
+        kick_all_players_from_room(room, username)
+    else:
+        leave_room(room)
+        session.pop('room_id', None)
+        delete_user_from_db(username, room)
+        send({'alert': username + ' opuścił pokój.'}, room=room)
 
 
 @socketio.on('draw')
@@ -209,6 +212,14 @@ def prepare_round_for_room(room):
 
     # clear canvas
     socketio.emit('clear', "", room=room)
+
+
+def kick_all_players_from_room(room, username):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        socketio.emit('kick_all',{"admin": username}, room=room)
+        delete_room(room)
+        delete_users(room)
 
 
 # run app
