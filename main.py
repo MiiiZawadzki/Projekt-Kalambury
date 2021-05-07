@@ -50,7 +50,7 @@ def create_room():
         turn_count = request.form["turn_count"]
         try:
             words = get_words_string(int(turn_count))
-            room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws="", turn_count=turn_count, turn_length=turn_length, game_state="game_ready")
+            room = Room(room_id=session['room_id'], admin_username=session["username"], current_word="", words=words, who_draws=session["username"], turn_count=turn_count, turn_length=turn_length, game_state="game_ready")
             db.session.add(room)
             db.session.commit()
             return redirect(url_for('game'))
@@ -134,7 +134,7 @@ def on_message(received_data):
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
     word = return_current_word(room)
-    if username == return_drawer_username(room):
+    if username == return_drawer_username(room) and  check_game_state(room) != "game_ready":
         return
     if urllib.parse.unquote(received_data['message_data']) == word: # and game_state != "game_paused": 
         # zmien hasla w bazie
