@@ -181,13 +181,13 @@ def return_drawer_username(room):
     if room_from_db:
         return room_from_db.who_draws
 
-def delate_room(room):
+def delete_room(room):
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         db.session.delete(room_from_db)
         db.session.commit()
 
-def delate_users(room):
+def delete_users(room):
     users_from_db = User.query.filter_by(room_id=room).all()
     if users_from_db:
         for user in users_from_db:

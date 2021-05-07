@@ -218,8 +218,8 @@ def kick_all_players_from_room(room, username):
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         socketio.emit('kick_all',{"admin": username}, room=room)
-        delate_room(room)
-        delate_users(room)
+        delete_room(room)
+        delete_users(room)
 
 
 # run app
