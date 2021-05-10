@@ -134,7 +134,7 @@ def on_message(received_data):
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
     word = return_current_word(room)
-    if username == return_drawer_username(room):
+    if username == return_drawer_username(room) and  check_game_state(room) != "game_ready":
         return
     if urllib.parse.unquote(received_data['message_data']) == word: # and game_state != "game_paused": 
         # zmien hasla w bazie
