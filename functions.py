@@ -190,6 +190,8 @@ def delete_room(room):
 def delete_users(room):
     users_from_db = User.query.filter_by(room_id=room).all()
     if users_from_db:
+        admin = return_admin_username(room)
         for user in users_from_db:
-            db.session.delete(user)
+            if user.username != admin:
+                db.session.delete(user)
         db.session.commit()

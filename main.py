@@ -229,5 +229,4 @@ def kick_all_players_from_room(room, username):
 
 # run app
 if __name__ == '__main__':
-    # socketio.run(app, debug=True)
-    app.run()
+    socketio.run(app, debug=True)
