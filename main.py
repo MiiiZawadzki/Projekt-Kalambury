@@ -133,15 +133,18 @@ def on_message(received_data):
     room = session['room_id']
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
-    word = return_current_word(room)
+    original_word = return_current_word(room)
+    word = clear_string(original_word)
+    guess = clear_string(urllib.parse.unquote(received_data['message_data']))
+
     if username == return_drawer_username(room) and  check_game_state(room) != "game_ready":
         return
-    if urllib.parse.unquote(received_data['message_data']) == word: # and game_state != "game_paused": 
+    if guess == word: # and game_state != "game_paused": 
         # zmien hasla w bazie
         change_users_score(username, room)
         change_game_state(room,'ready_to_next_round')
         # change_drawer_score(username, room) 
-        emit('correct', {"word": word, 'username': username}, room=room)
+        emit('correct', {"word": original_word, 'username': username}, room=room)
 
         # change drawer and start game
         prepare_round_for_room(room)
@@ -198,6 +201,12 @@ def end_game(received_data):
     sender = received_data["sender"]
     emit('stop_game',  {"winner": return_admin_username(room)}, room=room)
 
+    
+@socketio.on('hint')
+def hint(received_data):
+    room = received_data["room"]
+    letters = received_data["letters"]
+    emit('show_hint', {"hint": return_hint(room, letters)}, room=room)
 
 def prepare_round_for_room(room):
 
