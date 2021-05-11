@@ -53,7 +53,6 @@ $(function () {
   // switch color [green, blue, red, yellow, black, white]
   $(".color-button").on("click", function () {
     var color_value = $(this).attr("id");
-    console.log(who_draws);
     switch (color_value) {
       case "green":
         color = "green";
@@ -177,7 +176,6 @@ $(function () {
 
   socketIO.on("draw", (data) => {
     if (data.draw_data) {
-      if (data.user == data.who_draws) {
         ctx.beginPath();
         ctx.moveTo(data.draw_data[0].prevX, data.draw_data[0].prevY);
         ctx.lineTo(data.draw_data[1].currX, data.draw_data[1].currY);
@@ -186,7 +184,6 @@ $(function () {
         ctx.lineCap = "round";
         ctx.stroke();
         ctx.closePath();
-      }
     }
   });
 
@@ -362,4 +359,11 @@ $(function () {
   //         socketIO.emit("time_end", { room: $("#room_id").text() });
   //     }
   // }
+
+});
+
+$(window).on('load', function(){
+  var socketIO = io.connect("http://" + document.domain + ":" + location.port);
+  console.log("jebac pis");
+  socketIO.emit('load', 'load');
 });

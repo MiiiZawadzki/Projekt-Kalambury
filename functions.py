@@ -4,6 +4,7 @@ from models import Room, User
 from models import db
 from random import randint
 import time
+import os
 
 def return_current_word(room):
     room_from_db = Room.query.filter_by(room_id=room).first()
@@ -183,6 +184,7 @@ def return_drawer_username(room):
 
 def delete_room(room):
     room_from_db = Room.query.filter_by(room_id=room).first()
+    os.remove("static/canvasIMG/{}.txt".format(room))
     if room_from_db:
         db.session.delete(room_from_db)
         db.session.commit()
