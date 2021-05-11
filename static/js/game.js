@@ -361,13 +361,13 @@ $(function () {
   function startTimer() {
     var actual = $("#timer").text();
     if (actual == 15) {
-      socketIO.emit("hint", { room: $("#room_id").text(), letters: 1});
+      socketIO.emit("hint", { room: $("#room_id").text(), letters: 1 });
     }
     if (actual == 10) {
-      socketIO.emit("hint", { room: $("#room_id").text(), letters: 2});
+      socketIO.emit("hint", { room: $("#room_id").text(), letters: 2 });
     }
     if (actual == 5) {
-      socketIO.emit("hint", { room: $("#room_id").text(), letters: 4});
+      socketIO.emit("hint", { room: $("#room_id").text(), letters: 4 });
     }
     if (actual != 0) {
       $("#timer").text(actual - 1);
