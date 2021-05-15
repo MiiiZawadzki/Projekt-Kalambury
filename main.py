@@ -136,7 +136,7 @@ def on_message(received_data):
     word = return_current_word(room)
     if username == return_drawer_username(room) and  check_game_state(room) != "game_ready":
         return
-    if urllib.parse.unquote(received_data['message_data']) == word: # and game_state != "game_paused": 
+    if urllib.parse.unquote(received_data['message_data']) == word and check_game_state(room) == "game_in_progress": 
         # zmien hasla w bazie
         change_users_score(username, room)
         change_game_state(room,'ready_to_next_round')
@@ -176,6 +176,8 @@ def on_draw(received_data):
     username = session['username']
     if username != return_drawer_username(room):
         return
+    if check_game_state(room) != "game_in_progress":
+        return
     emit('draw', received_data, room=room)
 
 @socketio.on('clear')
@@ -196,6 +198,7 @@ def time_end(received_data):
 def end_game(received_data):
     room = received_data["room"]
     sender = received_data["sender"]
+    change_game_state(room, "game_ended")
     emit('stop_game',  {"winner": return_admin_username(room)}, room=room)
 
 
