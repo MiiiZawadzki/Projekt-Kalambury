@@ -58,15 +58,17 @@ def return_hint(room, how_many_letters):
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         word = room_from_db.current_word
-        print("showing hint: " + word[:how_many_letters])
-        return word[:how_many_letters]
+        hint = word[:how_many_letters]
+        hint = hint.replace(' ', '_')
+        return hint
 
 def clear_string(string):
-    string = ''.join(string.split())  # usunięcie znaków białych
     string = string.lower()
-    for char in ",.":                 # kropki, przecinki...
+    for char in ",.":
         string = string.replace(char, '')
-    """   Chcemy polskie znaki?
+    return string
+
+def delete_diacritics(string):  # usuwanie polskich znaków
     string = string.replace('ą', 'a')
     string = string.replace('ć', 'c')
     string = string.replace('ę', 'e')
@@ -75,7 +77,7 @@ def clear_string(string):
     string = string.replace('ó', 'o')
     string = string.replace('ś', 's')
     string = string.replace('ź', 'z')
-    string = string.replace('ż', 'z') """
+    string = string.replace('ż', 'z')
     return string
 
 
