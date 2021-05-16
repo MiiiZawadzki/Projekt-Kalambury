@@ -1,3 +1,4 @@
+import io
 from flask import Flask, render_template, redirect, url_for, session, request,jsonify
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
 from secrets import secret_key
@@ -7,6 +8,7 @@ import urllib.parse
 from functions import *
 from models import *
 from words import get_words_string
+import ast
 
 # app config
 app = Flask(__name__)
@@ -46,6 +48,8 @@ def create_room():
     room_id = generate_room_id()
     session['room_id'] = room_id
     if create_form.validate_on_submit():
+        file = open("static/canvasIMG/{}.txt".format(room_id), "w")
+        file.close()
         turn_length = request.form["turn_length"]
         turn_count = request.form["turn_count"]
         try:
@@ -56,7 +60,6 @@ def create_room():
             return redirect(url_for('game'))
         except ValueError:
              return redirect(url_for('error', error_type="error"))
-
     return render_template("createRoom.html", form=create_form)
 
 
@@ -176,12 +179,36 @@ def on_draw(received_data):
     username = session['username']
     if username != return_drawer_username(room):
         return
+    try:
+        file = open("static/canvasIMG/{}.txt".format(room), "a")
+        file.write(str(received_data)+"\n")
+        file.close()
+    except:
+        return redirect(url_for('error', error_type="error"))
     emit('draw', received_data, room=room)
 
 @socketio.on('clear')
 def clean(received_data):
     room = session['room_id']
+    username = session['username']
+    if username != return_drawer_username(room):
+        return
+    file = open("static/canvasIMG/{}.txt".format(room), "w")
+    file.close()
     emit('clear', received_data, room=room)
+
+@socketio.on('load')
+def load(received_data):
+    room = session['room_id']
+    try:
+        file = open("static/canvasIMG/{}.txt".format(room), "r")
+        for line in file:
+            data = ast.literal_eval(line.strip())
+            emit('draw', data, room=room)
+        file.close()
+    except:
+        return redirect(url_for('error', error_type="error"))
+
 
 @socketio.on('time_end')
 def time_end(received_data):
@@ -189,6 +216,7 @@ def time_end(received_data):
     sender = received_data["sender"]
     if check_game_state(room) != "ready_to_next_round" and sender == return_admin_username(room):
         emit('time_is_over',  {"word": return_current_word(room)}, room=room)
+        emit('clear', received_data, room=room)
         prepare_round_for_room(room)
 
 

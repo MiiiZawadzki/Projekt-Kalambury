@@ -113,6 +113,7 @@ html {
 }
 
 .word-container {
+    position: relative;
     display: flex;
     height: 100px;
     width: 100%;
@@ -310,6 +311,24 @@ html {
     align-items: center;
 }
 
+.delete-button {
+    position: absolute;
+    right: -13px;
+    top: 3px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    color: white;
+    border: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-button:hover {
+    background-color: rgb(255, 0, 0) !important;
+}
+
 .own-username-box {
     position: absolute;
     height: 15px;
@@ -378,10 +397,12 @@ button:hover {
     cursor: pointer;
 }
 
-input[type="button"] {
+input[type="button"],
+button {
     outline: none;
 }
 
-input[type="button"]::-moz-focus-inner {
+input[type="button"]::-moz-focus-inner,
+button {
     border: 0;
 }

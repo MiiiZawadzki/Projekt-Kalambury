@@ -24,7 +24,7 @@ def check_room(form, field):
 
 # class including fields to enter game
 class IndexForm(FlaskForm):
-    username = StringField('username', validators=[InputRequired()])
+    username = StringField('username', validators=[InputRequired(), Length(min=3, max=16)])
     submitJoin = SubmitField('Dołącz')
     submitCreate = SubmitField('Stwórz')
 
