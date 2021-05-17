@@ -136,18 +136,40 @@ def on_message(received_data):
     room = session['room_id']
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
-    word = return_current_word(room)
     if username == return_drawer_username(room) and  check_game_state(room) != "game_ready":
         return
-    if urllib.parse.unquote(received_data['message_data']) == word: # and game_state != "game_paused": 
+
+    original_word = return_current_word(room)
+    word = clear_string(original_word)
+    word_bez_pl = delete_diacritics(word)
+    word_bez_pl = word_bez_pl.split()
+    guess = urllib.parse.unquote(received_data['message_data'])
+    guess = clear_string(guess)
+    guess = delete_diacritics(guess)
+    guess = guess.split()
+
+    if ''.join(guess) == ''.join(word_bez_pl): # and game_state != "game_paused": 
         # zmien hasla w bazie
         change_users_score(username, room)
         change_game_state(room,'ready_to_next_round')
         # change_drawer_score(username, room) 
-        emit('correct', {"word": word, 'username': username}, room=room)
+        emit('correct', {"word": original_word, 'username': username}, room=room)
 
         # change drawer and start game
         prepare_round_for_room(room)
+    else:
+        word = word.split()
+        guessed = []
+        for wurd in guess:
+            if wurd in word_bez_pl:
+                i = word_bez_pl.index(wurd)
+                guessed.append(word[i])
+        if len(guessed) == 1:
+            send({'so_close': "Zmierzasz w dobrą stronę. Hasło zawiera słowo: " + guessed[0]}, room=room)
+        elif len(guessed) > 1:
+            send({'so_close': "Zmierzasz w dobrą stronę. Hasło zawiera słowa: " + ', '.join(guessed)}, room=room)
+
+
     send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
 
 
@@ -226,6 +248,14 @@ def end_game(received_data):
     sender = received_data["sender"]
     emit('stop_game',  {"winner": return_admin_username(room)}, room=room)
 
+    
+@socketio.on('hint')
+def hint(received_data):
+    room = received_data["room"]
+    letters = received_data["letters"]
+    sender = received_data["sender"]
+    if sender == return_admin_username(room):
+        send({'so_close': "Hasło zaczyna sie od: " + return_hint(room, letters)}, room=room)
 
 def prepare_round_for_room(room):
 

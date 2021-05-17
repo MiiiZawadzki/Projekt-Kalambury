@@ -55,6 +55,32 @@ def change_drawer(room):
             room_from_db.who_draws = new_drawer
             db.session.commit()
 
+def return_hint(room, how_many_letters):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        word = room_from_db.current_word
+        hint = word[:how_many_letters]
+        hint = hint.replace(' ', '_')
+        return hint
+
+def clear_string(string):
+    string = string.lower()
+    for char in ",.":
+        string = string.replace(char, '')
+    return string
+
+def delete_diacritics(string):  # usuwanie polskich znaków
+    string = string.replace('ą', 'a')
+    string = string.replace('ć', 'c')
+    string = string.replace('ę', 'e')
+    string = string.replace('ł', 'l')
+    string = string.replace('ń', 'n')
+    string = string.replace('ó', 'o')
+    string = string.replace('ś', 's')
+    string = string.replace('ź', 'z')
+    string = string.replace('ż', 'z')
+    return string
+
 
 def change_game_state(room, game_state):
     room_from_db = Room.query.filter_by(room_id=room).first()

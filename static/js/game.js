@@ -125,6 +125,18 @@ $(function () {
       alertDiv.appendChild(alertInnerDiv);
       document.querySelector("#messageContainer").append(alertDiv);
     }
+    // close to guess alert
+    if (data.so_close) {
+      const alertDiv = document.createElement("div");
+      alertDiv.classList.add("alert-message-container");
+      const alertInnerDiv = document.createElement("div");
+      alertInnerDiv.classList.add("alert-message");
+      alertDiv.style.backgroundColor = "rgba(50, 190, 110, 0.8)";
+      alertInnerDiv.innerHTML = data.so_close;
+      alertDiv.appendChild(alertInnerDiv);
+      document.querySelector("#messageContainer").append(alertDiv);
+    }
+
     // display incoming messages
     if (data.message_data) {
       const outerDiv = document.createElement("div");
@@ -345,6 +357,15 @@ $(function () {
 
   function startTimer() {
     var actual = $("#timer").text();
+    if (actual == 15) {
+      socketIO.emit("hint", { room: $("#room_id").text(), letters: 1, sender: user });
+    }
+    if (actual == 10) {
+      socketIO.emit("hint", { room: $("#room_id").text(), letters: 2, sender: user });
+    }
+    if (actual == 5) {
+      socketIO.emit("hint", { room: $("#room_id").text(), letters: 4, sender: user });
+    }
     if (actual != 0) {
       $("#timer").text(actual - 1);
     } else {
