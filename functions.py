@@ -159,6 +159,13 @@ def change_users_score(username, room):
                 db.session.commit()
 
 
+def get_users(room):
+    users_from_db = User.query.filter_by(room_id=room).order_by(User.score.desc()).all()
+    users = []
+    for user in users_from_db:
+        users.append([user.username, user.score])
+    print(users)
+
 # def change_drawer_score(username, room):
 #     user_from_db = User.query.filter_by(room_id=room, username=username).first()
 
