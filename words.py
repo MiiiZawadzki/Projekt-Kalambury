@@ -41,7 +41,7 @@ words = [
     "Lepiej dmuchać na zimne",
     "Trafiło się ślepej kurze ziarno",
     "Apetyt rośnie w miarę jedzenia",
-    "Jeśli wejdziesz miedzy wrony, musisz krakać jak i one",
+    "Jeśli wejdziesz między wrony, musisz krakać jak i one",
     "Jajko mądrzejsze od kury"
 ]
 

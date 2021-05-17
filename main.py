@@ -1,3 +1,4 @@
+import io
 from flask import Flask, render_template, redirect, url_for, session, request,jsonify
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
 from secrets import secret_key
@@ -7,6 +8,7 @@ import urllib.parse
 from functions import *
 from models import *
 from words import get_words_string
+import ast
 
 # app config
 app = Flask(__name__)
@@ -46,6 +48,8 @@ def create_room():
     room_id = generate_room_id()
     session['room_id'] = room_id
     if create_form.validate_on_submit():
+        file = open("static/canvasIMG/{}.txt".format(room_id), "w")
+        file.close()
         turn_length = request.form["turn_length"]
         turn_count = request.form["turn_count"]
         try:
@@ -56,7 +60,6 @@ def create_room():
             return redirect(url_for('game'))
         except ValueError:
              return redirect(url_for('error', error_type="error"))
-
     return render_template("createRoom.html", form=create_form)
 
 
@@ -133,18 +136,41 @@ def on_message(received_data):
     room = session['room_id']
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
-    word = return_current_word(room)
     if username == return_drawer_username(room) and  check_game_state(room) != "game_ready":
         return
-    if urllib.parse.unquote(received_data['message_data']) == word and check_game_state(room) == "game_in_progress": 
+
+    original_word = return_current_word(room)
+    word = clear_string(original_word)
+    word_bez_pl = delete_diacritics(word)
+    word_bez_pl = word_bez_pl.split()
+    guess = urllib.parse.unquote(received_data['message_data'])
+    guess = clear_string(guess)
+    guess = delete_diacritics(guess)
+    guess = guess.split()
+
+    if ''.join(guess) == ''.join(word_bez_pl): and check_game_state(room) == "game_in_progress":
+
         # zmien hasla w bazie
         change_users_score(username, room)
         change_game_state(room,'ready_to_next_round')
         # change_drawer_score(username, room) 
-        emit('correct', {"word": word, 'username': username}, room=room)
+        emit('correct', {"word": original_word, 'username': username}, room=room)
 
         # change drawer and start game
         prepare_round_for_room(room)
+    else:
+        word = word.split()
+        guessed = []
+        for wurd in guess:
+            if wurd in word_bez_pl:
+                i = word_bez_pl.index(wurd)
+                guessed.append(word[i])
+        if len(guessed) == 1:
+            send({'so_close': "Zmierzasz w dobrą stronę. Hasło zawiera słowo: " + guessed[0]}, room=room)
+        elif len(guessed) > 1:
+            send({'so_close': "Zmierzasz w dobrą stronę. Hasło zawiera słowa: " + ', '.join(guessed)}, room=room)
+
+
     send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
 
 
@@ -176,14 +202,40 @@ def on_draw(received_data):
     username = session['username']
     if username != return_drawer_username(room):
         return
+
     if check_game_state(room) != "game_in_progress":
         return
+
+    try:
+        file = open("static/canvasIMG/{}.txt".format(room), "a")
+        file.write(str(received_data)+"\n")
+        file.close()
+    except:
+        return redirect(url_for('error', error_type="error"))
     emit('draw', received_data, room=room)
 
 @socketio.on('clear')
 def clean(received_data):
     room = session['room_id']
+    username = session['username']
+    if username != return_drawer_username(room):
+        return
+    file = open("static/canvasIMG/{}.txt".format(room), "w")
+    file.close()
     emit('clear', received_data, room=room)
+
+@socketio.on('load')
+def load(received_data):
+    room = session['room_id']
+    try:
+        file = open("static/canvasIMG/{}.txt".format(room), "r")
+        for line in file:
+            data = ast.literal_eval(line.strip())
+            emit('draw', data, room=room)
+        file.close()
+    except:
+        return redirect(url_for('error', error_type="error"))
+
 
 @socketio.on('time_end')
 def time_end(received_data):
@@ -191,6 +243,7 @@ def time_end(received_data):
     sender = received_data["sender"]
     if check_game_state(room) != "ready_to_next_round" and sender == return_admin_username(room):
         emit('time_is_over',  {"word": return_current_word(room)}, room=room)
+        emit('clear', received_data, room=room)
         prepare_round_for_room(room)
 
 
@@ -201,6 +254,14 @@ def end_game(received_data):
     change_game_state(room, "game_ended")
     emit('stop_game',  {"winner": return_admin_username(room)}, room=room)
 
+    
+@socketio.on('hint')
+def hint(received_data):
+    room = received_data["room"]
+    letters = received_data["letters"]
+    sender = received_data["sender"]
+    if sender == return_admin_username(room):
+        send({'so_close': "Hasło zaczyna sie od: " + return_hint(room, letters)}, room=room)
 
 def prepare_round_for_room(room):
 

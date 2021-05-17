@@ -12,114 +12,118 @@
 
 <body>
     <div class="main-container">
-        <div class="left-side-container">
-            <div class="upper-left-container">
-                <div class="drawing-tools">
-                    <div id="draw-tools">
-                        <div class="colors-container">
-                            <input class="color-button mr-2" style="background-color: red;" id="red" type="button">
-                            <input class="color-button mr-2" style="background-color: green;" id="green" type="button">
-                            <input class="color-button mr-2" style="background-color: yellow;" id="yellow" type="button">
-                            <input class="color-button mr-2" style="background-color: blue;" id="blue" type="button">
-                            <input class="color-button mr-2" style="background-color: black;" id="black" type="button">
-                            <input class="color-button mr-2" style="background-color: white;" id="white" type="button">
-                            <button class="color-button mr-2" style="background-color: lightpink; " id="clear" type="button">
-                                <i class="fa fa-trash-o"></i>
-                            </button>
+        <div class="columns is-flex-wrap-wrap">
+            <div class="margin-bottom column left-side-container">
+                <div class="upper-left-container">
+                    <div class="drawing-tools">
+                        <div id="draw-tools">
+                            <div class="colors-container">
+                                <input class="color-button mr-2" style="background-color: red;" id="red" type="button">
+                                <input class="color-button mr-2" style="background-color: green;" id="green" type="button">
+                                <input class="color-button mr-2" style="background-color: yellow;" id="yellow" type="button">
+                                <input class="color-button mr-2" style="background-color: blue;" id="blue" type="button">
+                                <input class="color-button mr-2" style="background-color: black;" id="black" type="button">
+                                <input class="color-button mr-2" style="background-color: white;" id="white" type="button">
+                                <button class="color-button mr-2" style="background-color: lightpink; " id="clear" type="button">
+                                    <i class="fa fa-trash-o"></i>
+                                </button>
+                            </div>
+                            <div class="pencils-container">
+                                <input class="pencil-button mr-2" style="height: 28px;" id="max-width" type="button">
+                                <input class="pencil-button mr-2" style="height: 22px;" id="medium-width" type="button">
+                                <input class="pencil-button" style="height: 16px;" id="small-width" type="button">
+                            </div>
                         </div>
-                        <div class="pencils-container">
-                            <input class="pencil-button mr-2" style="height: 28px;" id="max-width" type="button">
-                            <input class="pencil-button mr-2" style="height: 22px;" id="medium-width" type="button">
-                            <input class="pencil-button" style="height: 16px;" id="small-width" type="button">
+                    </div>
+                    <div class="timer-container">
+                        <div class="color-button center timer" id="timer">
+                            -
                         </div>
                     </div>
                 </div>
-
-                <div class="timer-container">
-                    <div class="color-button center timer" id="timer">
-                        -
+                <div class="canvas" id="canvasContainer">
+                    <canvas id="gameCanvas" width="1000" height="700"></canvas>
+                </div>
+                <div class="word-container">
+                    <div class="word-box">
+                        Hasło:
+                        <p id="word">...</p>
+                        <button class="color-button delete-button" style="background-color: rgb(255, 86, 86); " id="delete" type="button">
+                            <i class="fa fa-times"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="canvas" id="canvasContainer">
-                <canvas id="gameCanvas" width="1000" height="700"></canvas>
-            </div>
-            <div class="word-container">
-                <div class="word-box">
-                    Hasło:
-                    <p id="word">...</p>
-                </div>
-            </div>
-        </div>
-        <div class="right-side-container">
-            <div class="upper-right-container">
-
-                <div class="current-drawing-container">
-                    <div class="current-drawing-box">
-                        Aktualnie rysuje:&nbsp;<b><p id="drawer">---</p></b>
+            <div class="column right-side-container">
+                <div class="upper-right-container">
+                    <div class="current-drawing-container">
+                        <div class="current-drawing-box">
+                            Rysuje:&nbsp;<b>
+                                <p id="drawer">---</p>
+                            </b>
+                        </div>
+                    </div>
+                    <div class="room-id-container">
+                        <div class="room-id">
+                            ID:
+                            <p id="room_id">{{room_id}}</p>
+                        </div>
                     </div>
                 </div>
-                <div class="room-id-container">
-                    <div class="room-id">
-                        ID:
-                        <p id="room_id">{{room_id}}</p>
+                <div class="score-table-container">
+                    <div class="score-table">
+                        <table class="table is-hoverable is-fullwidth">
+                            <thead>
+                                <th></th>
+                                <th>Użytkownik</th>
+                                <th>Wynik</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>1</th>
+                                    <td>Daniel</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <th>2</th>
+                                    <td>Brandon</td>
+                                    <td>443</td>
+                                </tr>
+                                <tr>
+                                    <th>3</th>
+                                    <td>Karol</td>
+                                    <td>1231</td>
+                                </tr>
+                                <tr>
+                                    <th>4</th>
+                                    <td>Zbyszek</td>
+                                    <td>32</td>
+                                </tr>
+                                <tr>
+                                    <th>5</th>
+                                    <td>Zbyszek</td>
+                                    <td>32</td>
+                                </tr>
+                                <tr>
+                                    <th>6</th>
+                                    <td>Zbyszek</td>
+                                    <td>32</td>
+                                </tr>
+                                <tr>
+                                    <th>7</th>
+                                    <td>Zbyszek</td>
+                                    <td>32</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-            <div class="score-table-container">
-                <div class="score-table">
-                    <table class="table is-hoverable is-fullwidth">
-                        <thead>
-                            <th></th>
-                            <th>Użytkownik</th>
-                            <th>Wynik</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th>1</th>
-                                <td>Daniel</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <th>2</th>
-                                <td>Brandon</td>
-                                <td>443</td>
-                            </tr>
-                            <tr>
-                                <th>3</th>
-                                <td>Karol</td>
-                                <td>1231</td>
-                            </tr>
-                            <tr>
-                                <th>4</th>
-                                <td>Zbyszek</td>
-                                <td>32</td>
-                            </tr>
-                            <tr>
-                                <th>5</th>
-                                <td>Zbyszek</td>
-                                <td>32</td>
-                            </tr>
-                            <tr>
-                                <th>6</th>
-                                <td>Zbyszek</td>
-                                <td>32</td>
-                            </tr>
-                            <tr>
-                                <th>7</th>
-                                <td>Zbyszek</td>
-                                <td>32</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="chat-container">
-                <div id="messageContainer" class="messages-box">
-
-                </div>
-                <div class="input-message-container">
-                    <input id="typedMessage" class="input is-primary">
+                <div class="chat-container">
+                    <div id="messageContainer" class="messages-box">
+                    </div>
+                    <div class="input-message-container">
+                        <input id="typedMessage" class="input is-primary">
+                    </div>
                 </div>
             </div>
         </div>
