@@ -148,7 +148,7 @@ def on_message(received_data):
     guess = delete_diacritics(guess)
     guess = guess.split()
 
-    if ''.join(guess) == ''.join(word_bez_pl): and check_game_state(room) == "game_in_progress":
+    if ''.join(guess) == ''.join(word_bez_pl) and check_game_state(room) == "game_in_progress":
 
         # zmien hasla w bazie
         change_users_score(username, room)
