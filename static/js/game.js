@@ -289,6 +289,19 @@ $(function () {
     }
   });
 
+  socketIO.on("skip", (data) => {
+    if (data.username) {
+      const alertDiv = document.createElement("div");
+      alertDiv.classList.add("alert-message-container");
+      const alertInnerDiv = document.createElement("div");
+      alertInnerDiv.classList.add("alert-message");
+      alertInnerDiv.innerHTML = "Użytkownik: " + data.username + " zrezygnował z rysowania";
+
+      alertDiv.appendChild(alertInnerDiv);
+      document.querySelector("#messageContainer").append(alertDiv);
+    }
+  });
+
   socketIO.on("kick_all", (data) => {
     alert("admin opuścił pokój - gra została przerwana");
     location.href = "/error/admin_left_room";
@@ -296,11 +309,21 @@ $(function () {
 
   // leave room
   $("#backToApp").click(function () {
-    var c = confirm("Are you sure you want to leave the room?");
-    if (c == true) {
-      socketIO.emit("leave", "leave");
       location.href = "/exit";
-    }
+  });
+
+  $("#delete").click(function (e) {
+    e.preventDefault();
+    $.getJSON(
+      "/skip_round",
+      {
+        room_id: $("#room_id").text(),
+        username: user,
+      },
+      function (data) {
+
+      }
+    );
   });
 
   $("#startGame").on("click", function (e) {
@@ -316,11 +339,6 @@ $(function () {
       }
     );
     return false;
-  });
-
-  // emit leave when closing tab
-  window.addEventListener("beforeunload", function (e) {
-    socketIO.emit("leave", "leave");
   });
 
   // send message after click on button
@@ -385,6 +403,13 @@ $(function () {
 
 $(window).on('load', function(){
   var socketIO = io.connect("http://" + document.domain + ":" + location.port);
-  console.log("jebac pis");
   socketIO.emit('load', 'load');
 });
+
+function myConfirmation() {
+  var socketIO = io.connect("http://" + document.domain + ":" + location.port);
+  socketIO.emit("leave", "leave");
+  return "aaa";
+}
+
+window.onbeforeunload = myConfirmation;
