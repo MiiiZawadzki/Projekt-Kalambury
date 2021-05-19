@@ -3,11 +3,12 @@
     font-family: 'Courier New', Courier, monospace;
 }
 
-body,
 html {
+    height: 100%;
     margin: 0;
-    background: linear-gradient(180deg, #02FFF0 0%, #00FFB2 100%);
-    overflow: hidden;
+    background: linear-gradient(180deg, #02FFF0 0%, #00FFB2 100%) fixed;
+    background-size: cover;
+    height: 100%;
 }
 
 .drawing-tools {
@@ -17,6 +18,8 @@ html {
 }
 
 .upper-left-container {
+    width: 1000px;
+    margin: auto;
     margin-bottom: 10px;
     height: 50px;
 }
@@ -42,6 +45,8 @@ html {
     border: 1px solid rgba(0, 0, 0, 0.5);
     box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.3);
     border-radius: 5px;
+    width: 1000px;
+    margin: auto;
 }
 
 .pencils-container {
@@ -69,10 +74,11 @@ html {
 
 .main-container {
     display: flex;
+    flex-wrap: wrap;
     width: 100%;
     height: 100vh;
     justify-content: center;
-    margin-top: 50px;
+    align-items: center;
 }
 
 .current-drawing-container {
@@ -113,12 +119,14 @@ html {
 }
 
 .word-container {
+    position: relative;
     display: flex;
     height: 100px;
-    width: 100%;
+    width: 1000px;
     justify-content: center;
     align-items: center;
     flex-direction: row;
+    margin: auto;
 }
 
 .messages-box {
@@ -183,15 +191,14 @@ html {
 }
 
 .right-side-container {
-    width: 500px;
     height: 770px;
 }
 
 .left-side-container {
-    width: 1000px;
+    width: 100%;
     height: 770px;
-    margin-right: 50px;
     display: block;
+    margin-bottom: 120px;
 }
 
 .chat-container {
@@ -230,12 +237,50 @@ html {
     transition: all 0.2s;
 }
 
+@media (max-width: 1350px) {
+    .responsive {
+        max-width: 80%;
+        margin: auto;
+    }
+}
+
+@media (max-width: 1200px) {
+    .responsive {
+        max-width: 88%;
+        margin: auto;
+    }
+}
+
+@media (max-width: 1100px) {
+    .responsive {
+        max-width: 93%;
+        margin: auto;
+    }
+}
+
+@media (max-width: 1060px) {
+    .responsive {
+        max-width: 97%;
+        margin: auto;
+    }
+}
+
+@media (max-width:1450px) {
+    .main-container {
+        margin-top: 55px;
+    }
+}
+
+@media (max-width:1350px) {
+    .right-side-container {
+        margin-bottom: 55px;
+    }
+}
+
 .exit-button {
     position: absolute;
-    top: 0;
-    right: 0;
-    margin-top: 20px;
-    margin-right: 20px;
+    top: 5px;
+    right: 20px;
 }
 
 .pencil-button {
@@ -310,6 +355,24 @@ html {
     align-items: center;
 }
 
+.delete-button {
+    position: absolute;
+    right: -13px;
+    top: 3px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    color: white;
+    border: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-button:hover {
+    background-color: rgb(255, 0, 0) !important;
+}
+
 .own-username-box {
     position: absolute;
     height: 15px;
@@ -346,7 +409,7 @@ html {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 112%;
+    width: 114%;
     margin-top: 10px;
     padding-top: 2px;
     padding-bottom: 2px;
@@ -378,10 +441,12 @@ button:hover {
     cursor: pointer;
 }
 
-input[type="button"] {
+input[type="button"],
+button {
     outline: none;
 }
 
-input[type="button"]::-moz-focus-inner {
+input[type="button"]::-moz-focus-inner,
+button {
     border: 0;
 }

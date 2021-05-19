@@ -53,7 +53,6 @@ $(function () {
   // switch color [green, blue, red, yellow, black, white]
   $(".color-button").on("click", function () {
     var color_value = $(this).attr("id");
-    console.log(who_draws);
     switch (color_value) {
       case "green":
         color = "green";
@@ -126,6 +125,18 @@ $(function () {
       alertDiv.appendChild(alertInnerDiv);
       document.querySelector("#messageContainer").append(alertDiv);
     }
+    // close to guess alert
+    if (data.so_close) {
+      const alertDiv = document.createElement("div");
+      alertDiv.classList.add("alert-message-container");
+      const alertInnerDiv = document.createElement("div");
+      alertInnerDiv.classList.add("alert-message");
+      alertDiv.style.backgroundColor = "rgba(50, 190, 110, 0.8)";
+      alertInnerDiv.innerHTML = data.so_close;
+      alertDiv.appendChild(alertInnerDiv);
+      document.querySelector("#messageContainer").append(alertDiv);
+    }
+
     // display incoming messages
     if (data.message_data) {
       const outerDiv = document.createElement("div");
@@ -177,7 +188,6 @@ $(function () {
 
   socketIO.on("draw", (data) => {
     if (data.draw_data) {
-      if (data.user == data.who_draws) {
         ctx.beginPath();
         ctx.moveTo(data.draw_data[0].prevX, data.draw_data[0].prevY);
         ctx.lineTo(data.draw_data[1].currX, data.draw_data[1].currY);
@@ -186,7 +196,6 @@ $(function () {
         ctx.lineCap = "round";
         ctx.stroke();
         ctx.closePath();
-      }
     }
   });
 
@@ -348,6 +357,15 @@ $(function () {
 
   function startTimer() {
     var actual = $("#timer").text();
+    if (actual == 15) {
+      socketIO.emit("hint", { room: $("#room_id").text(), letters: 1, sender: user });
+    }
+    if (actual == 10) {
+      socketIO.emit("hint", { room: $("#room_id").text(), letters: 2, sender: user });
+    }
+    if (actual == 5) {
+      socketIO.emit("hint", { room: $("#room_id").text(), letters: 4, sender: user });
+    }
     if (actual != 0) {
       $("#timer").text(actual - 1);
     } else {
@@ -362,4 +380,11 @@ $(function () {
   //         socketIO.emit("time_end", { room: $("#room_id").text() });
   //     }
   // }
+
+});
+
+$(window).on('load', function(){
+  var socketIO = io.connect("http://" + document.domain + ":" + location.port);
+  console.log("jebac pis");
+  socketIO.emit('load', 'load');
 });
