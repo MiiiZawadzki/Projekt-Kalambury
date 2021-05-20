@@ -199,6 +199,8 @@ def on_leave(received_data):
     if username == return_admin_username(room):
         kick_all_players_from_room(room, username)
     else:
+        if username == return_drawer_username(room):
+            prepare_round_for_room(room)
         leave_room(room)
         session.pop('room_id', None)
         delete_user_from_db(username, room)
@@ -261,7 +263,7 @@ def end_game(received_data):
     room = received_data["room"]
     sender = received_data["sender"]
     change_game_state(room, "game_ended")
-    emit('stop_game',  {"winner": return_admin_username(room)}, room=room)
+    emit('stop_game',  {"winner": return_winner(room)}, room=room)
 
     
 @socketio.on('hint')
@@ -270,7 +272,7 @@ def hint(received_data):
     letters = received_data["letters"]
     sender = received_data["sender"]
     if sender == return_admin_username(room):
-        send({'so_close': "Hasło zaczyna sie od: " + return_hint(room, letters)}, room=room)
+        send({'so_close': return_hint(room, letters)}, room=room)
 
 def prepare_round_for_room(room):
 

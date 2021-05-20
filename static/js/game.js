@@ -282,7 +282,7 @@ $(function () {
       alertDiv.classList.add("alert-message-container");
       const alertInnerDiv = document.createElement("div");
       alertInnerDiv.classList.add("alert-message");
-      alertInnerDiv.innerHTML = "Gra dobiegła końca, wygrał " + data.winner;
+      alertInnerDiv.innerHTML = "Gra dobiegła końca.<br>" + data.winner.bold();
 
       alertDiv.appendChild(alertInnerDiv);
       document.querySelector("#messageContainer").append(alertDiv);
@@ -375,14 +375,14 @@ $(function () {
 
   function startTimer() {
     var actual = $("#timer").text();
-    if (actual == 15) {
+    if (actual == 16) {
       socketIO.emit("hint", { room: $("#room_id").text(), letters: 1, sender: user });
     }
-    if (actual == 10) {
+    if (actual == 11) {
       socketIO.emit("hint", { room: $("#room_id").text(), letters: 2, sender: user });
     }
-    if (actual == 5) {
-      socketIO.emit("hint", { room: $("#room_id").text(), letters: 4, sender: user });
+    if (actual == 6) {
+      socketIO.emit("hint", { room: $("#room_id").text(), letters: 0, sender: user });
     }
     if (actual != 0) {
       $("#timer").text(actual - 1);
