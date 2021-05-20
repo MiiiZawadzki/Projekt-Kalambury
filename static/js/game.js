@@ -307,6 +307,12 @@ $(function () {
     location.href = "/error/admin_left_room";
   });
 
+  socketIO.on("single_tick", (data) => {
+    if(data.time){
+      $("#timer").text(data.time);
+    }
+  });
+
   // leave room
   $("#backToApp").click(function () {
       location.href = "/exit";
@@ -374,19 +380,18 @@ $(function () {
   }
 
   function startTimer() {
-    var actual = $("#timer").text();
-    if (actual == 16) {
+    var actual = $("#timer").text()-1;
+    if (actual == 15) {
       socketIO.emit("hint", { room: $("#room_id").text(), letters: 1, sender: user });
     }
-    if (actual == 11) {
+    if (actual == 10) {
       socketIO.emit("hint", { room: $("#room_id").text(), letters: 2, sender: user });
     }
-    if (actual == 6) {
+    if (actual == 5) {
       socketIO.emit("hint", { room: $("#room_id").text(), letters: 0, sender: user });
     }
-    if (actual != 0) {
-      $("#timer").text(actual - 1);
-    } else {
+    socketIO.emit("timer_tick", { room: $("#room_id").text(), sender: user, time: actual});
+    if (actual == 0) {
       clearInterval(timer);
       socketIO.emit("time_end", { room: $("#room_id").text(), sender: user });
     }
