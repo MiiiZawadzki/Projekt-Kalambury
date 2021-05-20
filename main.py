@@ -207,6 +207,8 @@ def on_leave(received_data):
     else:
         if username == return_drawer_username(room):
             prepare_round_for_room(room)
+            file = open("static/canvasIMG/{}.txt".format(room), "w")
+            file.close()
             emit('clear', received_data, room=room)
         leave_room(room)
         session.pop('room_id', None)

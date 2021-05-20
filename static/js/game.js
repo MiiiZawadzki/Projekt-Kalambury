@@ -2,6 +2,7 @@ var color = "black",
   thickness = 16;
 var timer = null;
 var timeEnd = false;
+let user = sessionStorage.getItem("username");
 $(function () {
   var flag,
     dot_flag = false,
@@ -103,7 +104,7 @@ $(function () {
   });
 
   // get username set in index.html
-  let user = sessionStorage.getItem("username");
+
   var who_draws = "";
   // connect with socket.io
   //    var socketIO = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
