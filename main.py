@@ -132,7 +132,7 @@ def get_word():
 def skip_round():
     room = request.args.get('room_id', 0, type=str)
     username = request.args.get('username', 0, type=str)
-    if check_game_state(room) == "game_in_progress":
+    if check_game_state(room) == "game_in_progress" and username == return_drawer_username(room):
         decrease_user_points(username, room)
         prepare_round_for_room(room)
         socketio.emit('skip', {"username": username}, room=room)
