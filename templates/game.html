@@ -17,7 +17,7 @@
                 <div class="upper-left-container">
                     <div class="drawing-tools">
                         <div id="draw-tools">
-                            <div class="colors-container">
+                            <div class="colors-container" style="visibility: hidden;">
                                 <input class="color-button mr-2" style="background-color: red;" id="red" type="button">
                                 <input class="color-button mr-2" style="background-color: green;" id="green" type="button">
                                 <input class="color-button mr-2" style="background-color: yellow;" id="yellow" type="button">
@@ -28,7 +28,7 @@
                                     <i class="fa fa-trash-o"></i>
                                 </button>
                             </div>
-                            <div class="pencils-container">
+                            <div class="pencils-container" style="visibility: hidden;">
                                 <input class="pencil-button mr-2" style="height: 28px;" id="max-width" type="button">
                                 <input class="pencil-button mr-2" style="height: 22px;" id="medium-width" type="button">
                                 <input class="pencil-button" style="height: 16px;" id="small-width" type="button">
@@ -44,7 +44,7 @@
                 <div class="canvas" id="canvasContainer">
                     <canvas id="gameCanvas" width="1000" height="700"></canvas>
                 </div>
-                <div class="word-container">
+                <div class="word-container" style="visibility: hidden;">
                     <div class="word-box">
                         Hasło:
                         <p id="word">...</p>
