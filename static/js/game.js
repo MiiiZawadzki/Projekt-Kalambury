@@ -382,15 +382,7 @@ $(function () {
 
   function startTimer() {
     var actual = $("#timer").text()-1;
-    if (actual == 15) {
-      socketIO.emit("hint", { room: $("#room_id").text(), letters: 1, sender: user });
-    }
-    if (actual == 10) {
-      socketIO.emit("hint", { room: $("#room_id").text(), letters: 2, sender: user });
-    }
-    if (actual == 5) {
-      socketIO.emit("hint", { room: $("#room_id").text(), letters: 0, sender: user });
-    }
+    
     socketIO.emit("timer_tick", { room: $("#room_id").text(), sender: user, time: actual});
     if (actual == 0) {
       clearInterval(timer);
