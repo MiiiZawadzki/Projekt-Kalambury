@@ -274,14 +274,6 @@ def end_game(received_data):
     change_game_state(room, "game_ended")
     emit('stop_game',  {"winner": return_winner(room)}, room=room)
 
-    
-@socketio.on('hint')
-def hint(received_data):
-    room = received_data["room"]
-    letters = received_data["letters"]
-    sender = received_data["sender"]
-    if sender == return_admin_username(room):
-        send({'so_close': return_hint(room, letters)}, room=room)
 
 @socketio.on('timer_tick')
 def timer_tick(received_data):
@@ -291,6 +283,14 @@ def timer_tick(received_data):
     if sender == return_admin_username(room):
         set_timer_in_db(room, time)
         emit('single_tick',  {"time": return_time(room)}, room=room)
+
+        turn_length = get_turn_length(room)
+        if (turn_length > 30 and time == int(turn_length*0.5)) or (turn_length <= 30 and time == 15):
+            send({'so_close': return_hint(room, 1)}, room=room)
+        elif (turn_length > 40 and time == int(turn_length*0.25)) or (turn_length <= 40 and time == 10):
+            send({'so_close': return_hint(room, 2)}, room=room)
+        elif (turn_length > 50 and time == int(turn_length*0.1)) or (turn_length <= 50 and time == 5):
+            send({'so_close': return_hint(room, 0)}, room=room)
 
 def prepare_round_for_room(room):
 
