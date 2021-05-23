@@ -2,6 +2,7 @@ var color = "black",
   thickness = 16;
 var timer = null;
 var timeEnd = false;
+let user = sessionStorage.getItem("username");
 $(function () {
   var flag,
     dot_flag = false,
@@ -103,7 +104,7 @@ $(function () {
   });
 
   // get username set in index.html
-  let user = sessionStorage.getItem("username");
+
   var who_draws = "";
   // connect with socket.io
   //    var socketIO = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
@@ -307,6 +308,12 @@ $(function () {
     location.href = "/error/admin_left_room";
   });
 
+  socketIO.on("single_tick", (data) => {
+    if(data.time){
+      $("#timer").text(data.time);
+    }
+  });
+
   // leave room
   $("#backToApp").click(function () {
       location.href = "/exit";
@@ -374,19 +381,18 @@ $(function () {
   }
 
   function startTimer() {
-    var actual = $("#timer").text();
-    if (actual == 16) {
+    var actual = $("#timer").text()-1;
+    if (actual == 15) {
       socketIO.emit("hint", { room: $("#room_id").text(), letters: 1, sender: user });
     }
-    if (actual == 11) {
+    if (actual == 10) {
       socketIO.emit("hint", { room: $("#room_id").text(), letters: 2, sender: user });
     }
-    if (actual == 6) {
+    if (actual == 5) {
       socketIO.emit("hint", { room: $("#room_id").text(), letters: 0, sender: user });
     }
-    if (actual != 0) {
-      $("#timer").text(actual - 1);
-    } else {
+    socketIO.emit("timer_tick", { room: $("#room_id").text(), sender: user, time: actual});
+    if (actual == 0) {
       clearInterval(timer);
       socketIO.emit("time_end", { room: $("#room_id").text(), sender: user });
     }
@@ -404,6 +410,9 @@ $(function () {
 $(window).on('load', function(){
   var socketIO = io.connect("http://" + document.domain + ":" + location.port);
   socketIO.emit('load', 'load');
+  $(".word-container").css("visibility", "hidden");
+  $(".colors-container").css("visibility", "hidden");
+  $(".pencils-container").css("visibility", "hidden");
 });
 
 function myConfirmation() {

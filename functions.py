@@ -263,3 +263,16 @@ def delete_users(room):
             if user.username != admin:
                 db.session.delete(user)
         db.session.commit()
+
+def set_timer_in_db(room, turn_length):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        room_from_db.timer = turn_length
+        db.session.commit()
+
+def return_time(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        return room_from_db.timer
+    return ""
+        

@@ -132,11 +132,17 @@ def get_word():
 def skip_round():
     room = request.args.get('room_id', 0, type=str)
     username = request.args.get('username', 0, type=str)
-    if check_game_state(room) == "game_in_progress":
+    if check_game_state(room) == "game_in_progress" and username == return_drawer_username(room):
         decrease_user_points(username, room)
         prepare_round_for_room(room)
         socketio.emit('skip', {"username": username}, room=room)
     return ""
+
+@app.route('/set_timer')
+def set_timer():
+    room = request.args.get('room_id', 0, type=str)
+    username = request.args.get('username', 0, type=str)
+    return jsonify(time=return_time(room))
 
 # socketIO functions
 @socketio.on('message')
@@ -201,6 +207,9 @@ def on_leave(received_data):
     else:
         if username == return_drawer_username(room):
             prepare_round_for_room(room)
+            file = open("static/canvasIMG/{}.txt".format(room), "w")
+            file.close()
+            emit('clear', received_data, room=room)
         leave_room(room)
         session.pop('room_id', None)
         delete_user_from_db(username, room)
@@ -274,6 +283,15 @@ def hint(received_data):
     if sender == return_admin_username(room):
         send({'so_close': return_hint(room, letters)}, room=room)
 
+@socketio.on('timer_tick')
+def timer_tick(received_data):
+    room = received_data["room"]
+    sender = received_data["sender"]
+    time = received_data["time"]
+    if sender == return_admin_username(room):
+        set_timer_in_db(room, time)
+        emit('single_tick',  {"time": return_time(room)}, room=room)
+
 def prepare_round_for_room(room):
 
     change_drawer(room)
@@ -283,6 +301,7 @@ def prepare_round_for_room(room):
     # start timer
     turn_length = get_turn_length(room)
     socketio.emit('start_timer', {"time": turn_length}, room=room)
+    set_timer_in_db(room, turn_length)
 
     # change game state
     change_game_state(room,'game_in_progress')
