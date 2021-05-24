@@ -8,8 +8,9 @@ from models import Room
 # custom validator to check if username is correct
 def check_data(form, field):
     room_from_db = Room.query.filter_by(room_id=form.room_id.data).first()
+    users_list = room_from_db.users.split(';')
     if room_from_db is not None:
-        if session["username"] in room_from_db.users:
+        if session["username"] in users_list:
             raise ValidationError("Użytkownik o takiej nazwie już istnieje w tym pokoju")
 
 
