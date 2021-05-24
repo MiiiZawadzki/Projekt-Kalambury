@@ -144,6 +144,13 @@ def set_timer():
     username = request.args.get('username', 0, type=str)
     return jsonify(time=return_time(room))
 
+@app.route('/load_data_about_room')
+def load_data_about_room():
+    room = request.args.get('room_id', 0, type=str)
+    if check_game_state(room) != "game_in_progress":
+        return jsonify(drawer_username="---")
+    return jsonify(drawer_username=return_drawer_username(room))
+
 # socketIO functions
 @socketio.on('message')
 def on_message(received_data):

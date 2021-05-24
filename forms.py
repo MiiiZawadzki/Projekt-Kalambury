@@ -11,8 +11,6 @@ def check_data(form, field):
     if room_from_db is not None:
         if session["username"] in room_from_db.users:
             raise ValidationError("Użytkownik o takiej nazwie już istnieje w tym pokoju")
-        if room_from_db.game_state == "game_in_progress":
-            raise ValidationError("Gra jest w trakcie rozgrywki, dołącz za chwile")
 
 
 # custom validator to check if room id is correct
