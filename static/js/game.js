@@ -402,9 +402,17 @@ $(function () {
 $(window).on('load', function(){
   var socketIO = io.connect("http://" + document.domain + ":" + location.port);
   socketIO.emit('load', 'load');
-  $(".word-container").css("visibility", "hidden");
-  $(".colors-container").css("visibility", "hidden");
-  $(".pencils-container").css("visibility", "hidden");
+  $.getJSON(
+    "/load_data_about_room",
+    {
+      room_id: $("#room_id").text()
+    },
+    function (data) {
+      if(data.drawer_username){
+        $("#drawer").text(data.drawer_username);
+      }
+    }
+  );
 });
 
 function myConfirmation() {
