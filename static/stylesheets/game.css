@@ -192,6 +192,8 @@ html {
 
 .right-side-container {
     height: 770px;
+    max-width: 524px;
+    min-width: 400px;
 }
 
 .left-side-container {
@@ -237,9 +239,33 @@ html {
     transition: all 0.2s;
 }
 
+@media (max-width: 1500px) {
+    .column {
+        flex-basis: 1;
+    }
+}
+
+@media(max-width: 1419px) {
+    .right-side-container {
+        max-width: 100%;
+        min-width: none;
+    }
+    .responsive {
+        max-width: 72%;
+        margin: auto;
+    }
+}
+
 @media (max-width: 1350px) {
     .responsive {
-        max-width: 80%;
+        max-width: 77%;
+        margin: auto;
+    }
+}
+
+@media (max-width: 1260px) {
+    .responsive {
+        max-width: 84%;
         margin: auto;
     }
 }
