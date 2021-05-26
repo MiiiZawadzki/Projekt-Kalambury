@@ -46,7 +46,8 @@ html {
     width: 100%;
 }
 
-.form-container {
+.form-container,
+.alert-container {
     display: flex;
     width: 100%;
     align-items: center;
@@ -54,6 +55,19 @@ html {
     flex-direction: column;
     padding-left: 2rem;
     padding-right: 2rem;
+}
+
+.alert-container {
+    display: none;
+}
+
+@media (max-width:1000px) {
+    .form-container {
+        display: none;
+    }
+    .alert-container {
+        display: flex;
+    }
 }
 
 .middle-container {
