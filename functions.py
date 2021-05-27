@@ -91,6 +91,16 @@ def delete_diacritics(string):  # usuwanie polskich znaków
     string = string.replace('ż', 'z')
     return string
 
+def return_turn_info(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        turn_count = room_from_db.turn_count
+        words = room_from_db.words
+        if words == "":
+            return "RUNDA " + str(turn_count) + " z " + str(turn_count)
+        else:
+            return "RUNDA " + str(turn_count - len(words.split(';'))) + " z " + str(turn_count)
+
 
 def change_game_state(room, game_state):
     room_from_db = Room.query.filter_by(room_id=room).first()
@@ -180,7 +190,7 @@ def get_users(room):
 def return_winner(room):
     users = get_users(room)
     if users:
-        top_score = 0
+        top_score = -101
         winner = []
         for user in users:
             if user[1] >= top_score:
@@ -188,7 +198,9 @@ def return_winner(room):
                 winner.append(user[0])
             else:
                 break
-        if len(winner) > 1:
+        if top_score < 0:
+            winner_string = 'Wszyscy jesteście chujowi'
+        elif len(winner) > 1:
             winner_string = 'Remis! ' + ', '.join(winner) + ' zdobyli tyle samo punktów.'
         else:
             winner_string = 'Wygrał/a ' + winner[0] + '!' 
