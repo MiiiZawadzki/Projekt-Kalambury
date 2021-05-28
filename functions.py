@@ -199,7 +199,7 @@ def return_winner(room):
             else:
                 break
         if top_score < 0:
-            winner_string = 'Wszyscy jesteście chujowi'
+            winner_string = 'Remis! Nikt nie wygrał'
         elif len(winner) > 1:
             winner_string = 'Remis! ' + ', '.join(winner) + ' zdobyli tyle samo punktów.'
         else:
