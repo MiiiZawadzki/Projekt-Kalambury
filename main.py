@@ -317,7 +317,7 @@ def prepare_round_for_room(room):
     # clear canvas
     socketio.emit('clear', "", room=room)
 
-    if return_current_word != "Skończyły się":
+    if return_current_word(room) != "Skończyły się":
         socketio.send({'alert': return_turn_info(room)}, room=room)
 
 
