@@ -158,7 +158,7 @@ def on_message(received_data):
     room = session['room_id']
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
-    if username == return_drawer_username(room) and  check_game_state(room) != "game_ready":
+    if username == return_drawer_username(room) and check_game_state(room) == "game_in_progress":
         return
 
     original_word = return_current_word(room)

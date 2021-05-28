@@ -287,6 +287,7 @@ $(function () {
 
       alertDiv.appendChild(alertInnerDiv);
       document.querySelector("#messageContainer").append(alertDiv);
+      $("#typedMessage").prop("disabled", false);
     }
   });
 
