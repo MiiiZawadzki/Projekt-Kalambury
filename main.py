@@ -119,7 +119,7 @@ def start_game():
         username = request.args.get('username', 0, type=str)
         if return_admin_username(room) == username:
             prepare_round_for_room(room)
-    return jsonify(word="...")
+    return ""
 
 
 # route which is used by user who draws to get the word
