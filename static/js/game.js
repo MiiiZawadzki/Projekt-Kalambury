@@ -1,5 +1,5 @@
 var color = "black",
-  thickness = 16;
+  thickness = 8;
 var timer = null;
 var timeEnd = false;
 let user = sessionStorage.getItem("username");
@@ -92,13 +92,13 @@ $(function () {
     var t = $(this).attr("id");
     switch (t) {
       case "max-width":
-        thickness = 22;
-        break;
-      case "medium-width":
         thickness = 16;
         break;
+      case "medium-width":
+        thickness = 8;
+        break;
       case "small-width":
-        thickness = 12;
+        thickness = 2;
         break;
     }
   });
