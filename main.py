@@ -89,7 +89,10 @@ def game():
 def error(error_type):
     return render_template("error.html", error_type=error_type)
 
-
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template("error.html", error_type="Nie ma takiej strony")
 
 # join route
 @app.route('/join/<room_id>', methods=['GET', 'POST'])
