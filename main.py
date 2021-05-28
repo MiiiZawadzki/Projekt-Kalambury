@@ -134,8 +134,8 @@ def skip_round():
     username = request.args.get('username', 0, type=str)
     if check_game_state(room) == "game_in_progress" and username == return_drawer_username(room):
         decrease_user_points(username, room)
-        prepare_round_for_room(room)
         socketio.emit('skip', {"username": username}, room=room)
+        prepare_round_for_room(room)
     return ""
 
 @app.route('/set_timer')
@@ -300,9 +300,7 @@ def timer_tick(received_data):
             send({'so_close': return_hint(room, 0)}, room=room)
 
 def prepare_round_for_room(room):
-
     change_drawer(room)
-
     change_current_word(room)
 
     # start timer
@@ -318,6 +316,9 @@ def prepare_round_for_room(room):
 
     # clear canvas
     socketio.emit('clear', "", room=room)
+
+    if return_current_word(room) != "Skończyły się":
+        socketio.send({'alert': return_turn_info(room)}, room=room)
 
 
 def kick_all_players_from_room(room, username):
