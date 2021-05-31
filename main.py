@@ -89,7 +89,10 @@ def game():
 def error(error_type):
     return render_template("error.html", error_type=error_type)
 
-
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template("error.html", error_type="Nie ma takiej strony")
 
 # join route
 @app.route('/join/<room_id>', methods=['GET', 'POST'])
@@ -119,7 +122,7 @@ def start_game():
         username = request.args.get('username', 0, type=str)
         if return_admin_username(room) == username:
             prepare_round_for_room(room)
-    return jsonify(word="...")
+    return ""
 
 
 # route which is used by user who draws to get the word
@@ -158,7 +161,7 @@ def on_message(received_data):
     room = session['room_id']
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
-    if username == return_drawer_username(room) and  check_game_state(room) != "game_ready":
+    if username == return_drawer_username(room) and check_game_state(room) == "game_in_progress":
         return
 
     original_word = return_current_word(room)
