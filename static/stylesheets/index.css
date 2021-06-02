@@ -56,6 +56,26 @@ html {
     padding-right: 2rem;
 }
 
+.alert-container {
+    display: none;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+@media (max-width:1000px) {
+    .form-container {
+        display: none;
+    }
+    .alert-container {
+        display: flex;
+    }
+}
+
 .middle-container {
     display: flex;
     justify-content: center;
