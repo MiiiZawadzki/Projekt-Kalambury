@@ -203,15 +203,18 @@ def on_message(received_data):
 def on_join(received_data):
     username = session['username']
     room = session['room_id']
+    user_list = get_users(room)
     join_room(room)
     add_user_to_db(username, room)
     send({'alert': username + ' dołączył do pokoju.'}, room=room)
-
+    emit('table_update', {"table_data": get_users(room)}, room=room)
 
 @socketio.on('leave')
 def on_leave(received_data):
     username = session['username']
     room = session['room_id']
+    user_list = get_users(room)
+    emit('table_update', {"table_data": get_users(room)}, room=room)
     if username == return_admin_username(room):
         kick_all_players_from_room(room, username)
     else:
@@ -319,7 +322,10 @@ def prepare_round_for_room(room):
 
     # clear canvas
     socketio.emit('clear', "", room=room)
-
+    
+    #table update
+    emit('table_update', {"table_data": get_users(room)}, room=room)
+    
     if return_current_word(room) != "Skończyły się":
         socketio.send({'alert': return_turn_info(room)}, room=room)
 
