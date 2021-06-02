@@ -324,7 +324,7 @@ def prepare_round_for_room(room):
     socketio.emit('clear', "", room=room)
     
     #table update
-    emit('table_update', {"table_data": get_users(room)}, room=room)
+    socketio.emit('table_update', {"table_data": get_users(room)}, room=room)
     
     if return_current_word(room) != "Skończyły się":
         socketio.send({'alert': return_turn_info(room)}, room=room)
