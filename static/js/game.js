@@ -276,6 +276,14 @@ $(function () {
     }
   });
 
+  socketIO.on("table_update", (data) => {
+    if(data.table_data){
+      $('#tableBody').empty();
+      for (let index = 0; index < data.table_data.length; index++) {
+        $('#tableBody').append('<tr><th>'+(index+1)+'</th><td>'+data.table_data[index][0]+'</td><td>'+data.table_data[index][1]+'</td></tr>');
+      }
+    }
+  });
   socketIO.on("stop_game", (data) => {
     if (data.winner) {
       clearInterval(timer);
