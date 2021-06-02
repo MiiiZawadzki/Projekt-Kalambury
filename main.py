@@ -164,6 +164,8 @@ def on_message(received_data):
     if username == return_drawer_username(room) and check_game_state(room) == "game_in_progress":
         return
 
+    send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
+
     original_word = return_current_word(room)
     word = clear_string(original_word)
     word_bez_pl = delete_diacritics(word)
@@ -174,13 +176,11 @@ def on_message(received_data):
     guess = guess.split()
 
     if ''.join(guess) == ''.join(word_bez_pl) and check_game_state(room) == "game_in_progress":
-
         # zmien hasla w bazie
         change_users_score(username, room)
         change_game_state(room,'ready_to_next_round')
         # change_drawer_score(username, room) 
         emit('correct', {"word": original_word, 'username': username}, room=room)
-
         # change drawer and start game
         prepare_round_for_room(room)
     else:
@@ -194,9 +194,6 @@ def on_message(received_data):
             send({'so_close': "Zmierzasz w dobrą stronę. Hasło zawiera słowo: " + guessed[0]}, room=room)
         elif len(guessed) > 1:
             send({'so_close': "Zmierzasz w dobrą stronę. Hasło zawiera słowa: " + ', '.join(guessed)}, room=room)
-
-
-    send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
 
 
 @socketio.on('join')
@@ -324,7 +321,7 @@ def prepare_round_for_room(room):
     socketio.emit('clear', "", room=room)
     
     #table update
-    emit('table_update', {"table_data": get_users(room)}, room=room)
+    socketio.emit('table_update', {"table_data": get_users(room)}, room=room)
     
     if return_current_word(room) != "Skończyły się":
         socketio.send({'alert': return_turn_info(room)}, room=room)
