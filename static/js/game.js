@@ -280,7 +280,12 @@ $(function () {
     if(data.table_data){
       $('#tableBody').empty();
       for (let index = 0; index < data.table_data.length; index++) {
+        if (data.table_data[index][0] == user) {
+          $('#tableBody').append("<tr style='background-color: aquamarine;'><th>"+(index+1)+'</th><td>'+data.table_data[index][0]+'</td><td>'+data.table_data[index][1]+'</td></tr>');
+        }
+        else{
         $('#tableBody').append('<tr><th>'+(index+1)+'</th><td>'+data.table_data[index][0]+'</td><td>'+data.table_data[index][1]+'</td></tr>');
+        }
       }
     }
   });
