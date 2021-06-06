@@ -16,6 +16,7 @@ class Room(db.Model):
     turn_count = db.Column(db.Integer(), nullable=False)
     turn_length = db.Column(db.Integer(), nullable=False)
     game_state = db.Column(db.Text())
+    timer = db.Column(db.Integer())
 
 # Room model
 class User(db.Model):

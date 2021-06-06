@@ -89,7 +89,10 @@ def game():
 def error(error_type):
     return render_template("error.html", error_type=error_type)
 
-
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template("error.html", error_type="Nie ma takiej strony")
 
 # join route
 @app.route('/join/<room_id>', methods=['GET', 'POST'])
@@ -119,7 +122,7 @@ def start_game():
         username = request.args.get('username', 0, type=str)
         if return_admin_username(room) == username:
             prepare_round_for_room(room)
-    return jsonify(word="...")
+    return ""
 
 
 # route which is used by user who draws to get the word
@@ -132,11 +135,24 @@ def get_word():
 def skip_round():
     room = request.args.get('room_id', 0, type=str)
     username = request.args.get('username', 0, type=str)
-    if check_game_state(room) == "game_in_progress":
+    if check_game_state(room) == "game_in_progress" and username == return_drawer_username(room):
         decrease_user_points(username, room)
-        prepare_round_for_room(room)
         socketio.emit('skip', {"username": username}, room=room)
+        prepare_round_for_room(room)
     return ""
+
+@app.route('/set_timer')
+def set_timer():
+    room = request.args.get('room_id', 0, type=str)
+    username = request.args.get('username', 0, type=str)
+    return jsonify(time=return_time(room))
+
+@app.route('/load_data_about_room')
+def load_data_about_room():
+    room = request.args.get('room_id', 0, type=str)
+    if check_game_state(room) != "game_in_progress":
+        return jsonify(drawer_username="---")
+    return jsonify(drawer_username=return_drawer_username(room))
 
 # socketIO functions
 @socketio.on('message')
@@ -145,8 +161,10 @@ def on_message(received_data):
     room = session['room_id']
     time = str(datetime.now().hour) + ":" + str(datetime.now().minute) + ":" + str(datetime.now().second)
 
-    if username == return_drawer_username(room) and  check_game_state(room) != "game_ready":
+    if username == return_drawer_username(room) and check_game_state(room) == "game_in_progress":
         return
+
+    send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
 
     original_word = return_current_word(room)
     word = clear_string(original_word)
@@ -158,13 +176,11 @@ def on_message(received_data):
     guess = guess.split()
 
     if ''.join(guess) == ''.join(word_bez_pl) and check_game_state(room) == "game_in_progress":
-
         # zmien hasla w bazie
         change_users_score(username, room)
         change_game_state(room,'ready_to_next_round')
         # change_drawer_score(username, room) 
         emit('correct', {"word": original_word, 'username': username}, room=room)
-
         # change drawer and start game
         prepare_round_for_room(room)
     else:
@@ -180,25 +196,30 @@ def on_message(received_data):
             send({'so_close': "Zmierzasz w dobrą stronę. Hasło zawiera słowa: " + ', '.join(guessed)}, room=room)
 
 
-    send({'message_data': received_data['message_data'], 'username': username, 'time': time}, room=room)
-
-
 @socketio.on('join')
 def on_join(received_data):
     username = session['username']
     room = session['room_id']
+    user_list = get_users(room)
     join_room(room)
     add_user_to_db(username, room)
     send({'alert': username + ' dołączył do pokoju.'}, room=room)
-
+    emit('table_update', {"table_data": get_users(room)}, room=room)
 
 @socketio.on('leave')
 def on_leave(received_data):
     username = session['username']
     room = session['room_id']
+    user_list = get_users(room)
+    emit('table_update', {"table_data": get_users(room)}, room=room)
     if username == return_admin_username(room):
         kick_all_players_from_room(room, username)
     else:
+        if username == return_drawer_username(room):
+            prepare_round_for_room(room)
+            file = open("static/canvasIMG/{}.txt".format(room), "w")
+            file.close()
+            emit('clear', received_data, room=room)
         leave_room(room)
         session.pop('room_id', None)
         delete_user_from_db(username, room)
@@ -261,26 +282,34 @@ def end_game(received_data):
     room = received_data["room"]
     sender = received_data["sender"]
     change_game_state(room, "game_ended")
-    emit('stop_game',  {"winner": return_admin_username(room)}, room=room)
+    emit('stop_game',  {"winner": return_winner(room)}, room=room)
 
-    
-@socketio.on('hint')
-def hint(received_data):
+
+@socketio.on('timer_tick')
+def timer_tick(received_data):
     room = received_data["room"]
-    letters = received_data["letters"]
     sender = received_data["sender"]
+    time = received_data["time"]
     if sender == return_admin_username(room):
-        send({'so_close': "Hasło zaczyna sie od: " + return_hint(room, letters)}, room=room)
+        set_timer_in_db(room, time)
+        emit('single_tick',  {"time": return_time(room)}, room=room)
+
+        turn_length = get_turn_length(room)
+        if (turn_length > 30 and time == int(turn_length*0.5)) or (turn_length <= 30 and time == 15):
+            send({'so_close': return_hint(room, 1)}, room=room)
+        elif (turn_length > 40 and time == int(turn_length*0.25)) or (turn_length <= 40 and time == 10):
+            send({'so_close': return_hint(room, 2)}, room=room)
+        elif (turn_length > 50 and time == int(turn_length*0.1)) or (turn_length <= 50 and time == 5):
+            send({'so_close': return_hint(room, 0)}, room=room)
 
 def prepare_round_for_room(room):
-
     change_drawer(room)
-
     change_current_word(room)
 
     # start timer
     turn_length = get_turn_length(room)
     socketio.emit('start_timer', {"time": turn_length}, room=room)
+    set_timer_in_db(room, turn_length)
 
     # change game state
     change_game_state(room,'game_in_progress')
@@ -290,6 +319,12 @@ def prepare_round_for_room(room):
 
     # clear canvas
     socketio.emit('clear', "", room=room)
+    
+    #table update
+    socketio.emit('table_update', {"table_data": get_users(room)}, room=room)
+    
+    if return_current_word(room) != "Skończyły się":
+        socketio.send({'alert': return_turn_info(room)}, room=room)
 
 
 def kick_all_players_from_room(room, username):
@@ -302,5 +337,4 @@ def kick_all_players_from_room(room, username):
 
 # run app
 if __name__ == '__main__':
-    # socketio.run(app, debug=True)
-    app.run()
+    socketio.run(app, debug=True)

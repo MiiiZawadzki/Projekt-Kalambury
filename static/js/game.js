@@ -1,7 +1,8 @@
 var color = "black",
-  thickness = 16;
+  thickness = 8;
 var timer = null;
 var timeEnd = false;
+let user = sessionStorage.getItem("username");
 $(function () {
   var flag,
     dot_flag = false,
@@ -91,19 +92,19 @@ $(function () {
     var t = $(this).attr("id");
     switch (t) {
       case "max-width":
-        thickness = 22;
-        break;
-      case "medium-width":
         thickness = 16;
         break;
+      case "medium-width":
+        thickness = 8;
+        break;
       case "small-width":
-        thickness = 12;
+        thickness = 2;
         break;
     }
   });
 
   // get username set in index.html
-  let user = sessionStorage.getItem("username");
+
   var who_draws = "";
   // connect with socket.io
   //    var socketIO = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
@@ -275,6 +276,19 @@ $(function () {
     }
   });
 
+  socketIO.on("table_update", (data) => {
+    if(data.table_data){
+      $('#tableBody').empty();
+      for (let index = 0; index < data.table_data.length; index++) {
+        if (data.table_data[index][0] == user) {
+          $('#tableBody').append("<tr style='background-color: aquamarine;'><th>"+(index+1)+'</th><td>'+data.table_data[index][0]+'</td><td>'+data.table_data[index][1]+'</td></tr>');
+        }
+        else{
+        $('#tableBody').append('<tr><th>'+(index+1)+'</th><td>'+data.table_data[index][0]+'</td><td>'+data.table_data[index][1]+'</td></tr>');
+        }
+      }
+    }
+  });
   socketIO.on("stop_game", (data) => {
     if (data.winner) {
       clearInterval(timer);
@@ -282,10 +296,11 @@ $(function () {
       alertDiv.classList.add("alert-message-container");
       const alertInnerDiv = document.createElement("div");
       alertInnerDiv.classList.add("alert-message");
-      alertInnerDiv.innerHTML = "Gra dobiegła końca, wygrał " + data.winner;
+      alertInnerDiv.innerHTML = "Gra dobiegła końca.<br>" + data.winner.bold();
 
       alertDiv.appendChild(alertInnerDiv);
       document.querySelector("#messageContainer").append(alertDiv);
+      $("#typedMessage").prop("disabled", false);
     }
   });
 
@@ -305,6 +320,12 @@ $(function () {
   socketIO.on("kick_all", (data) => {
     alert("admin opuścił pokój - gra została przerwana");
     location.href = "/error/admin_left_room";
+  });
+
+  socketIO.on("single_tick", (data) => {
+    if(data.time){
+      $("#timer").text(data.time);
+    }
   });
 
   // leave room
@@ -374,19 +395,10 @@ $(function () {
   }
 
   function startTimer() {
-    var actual = $("#timer").text();
-    if (actual == 15) {
-      socketIO.emit("hint", { room: $("#room_id").text(), letters: 1, sender: user });
-    }
-    if (actual == 10) {
-      socketIO.emit("hint", { room: $("#room_id").text(), letters: 2, sender: user });
-    }
-    if (actual == 5) {
-      socketIO.emit("hint", { room: $("#room_id").text(), letters: 4, sender: user });
-    }
-    if (actual != 0) {
-      $("#timer").text(actual - 1);
-    } else {
+    var actual = $("#timer").text()-1;
+    
+    socketIO.emit("timer_tick", { room: $("#room_id").text(), sender: user, time: actual});
+    if (actual == 0) {
       clearInterval(timer);
       socketIO.emit("time_end", { room: $("#room_id").text(), sender: user });
     }
@@ -404,6 +416,17 @@ $(function () {
 $(window).on('load', function(){
   var socketIO = io.connect("http://" + document.domain + ":" + location.port);
   socketIO.emit('load', 'load');
+  $.getJSON(
+    "/load_data_about_room",
+    {
+      room_id: $("#room_id").text()
+    },
+    function (data) {
+      if(data.drawer_username){
+        $("#drawer").text(data.drawer_username);
+      }
+    }
+  );
 });
 
 function myConfirmation() {

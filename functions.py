@@ -59,13 +59,23 @@ def return_hint(room, how_many_letters):
     room_from_db = Room.query.filter_by(room_id=room).first()
     if room_from_db:
         word = room_from_db.current_word
-        hint = word[:how_many_letters]
-        hint = hint.replace(' ', '_')
+        if how_many_letters == 0:
+            i = word.find(' ')
+            if i < 3:
+                hint = 'Pierwsze wyrazy hasła to: ' + word[:word.find(' ', i + 1)]
+            else:
+                hint = 'Pierwszy wyraz hasła to: ' + word[:i]
+        elif how_many_letters == 1:
+            hint = 'Pierwsza litera hasła to: ' + word[:1]
+        else:
+            hint = word[:how_many_letters]
+            hint = hint.replace(' ', '_')
+            hint = 'Pierwsze litery hasła to: ' + hint
         return hint
 
 def clear_string(string):
     string = string.lower()
-    for char in ",.":
+    for char in ",.-":
         string = string.replace(char, '')
     return string
 
@@ -80,6 +90,16 @@ def delete_diacritics(string):  # usuwanie polskich znaków
     string = string.replace('ź', 'z')
     string = string.replace('ż', 'z')
     return string
+
+def return_turn_info(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        turn_count = room_from_db.turn_count
+        words = room_from_db.words
+        if words == "":
+            return "RUNDA " + str(turn_count) + " z " + str(turn_count)
+        else:
+            return "RUNDA " + str(turn_count - len(words.split(';'))) + " z " + str(turn_count)
 
 
 def change_game_state(room, game_state):
@@ -160,10 +180,31 @@ def change_users_score(username, room):
 
 def get_users(room):
     users_from_db = User.query.filter_by(room_id=room).order_by(User.score.desc()).all()
-    users = []
-    for user in users_from_db:
-        users.append([user.username, user.score])
-    print(users)
+    if users_from_db:
+        users = []
+        for user in users_from_db:
+            users.append([user.username, user.score])
+        #print(users)
+        return users
+
+def return_winner(room):
+    users = get_users(room)
+    if users:
+        top_score = -101
+        winner = []
+        for user in users:
+            if user[1] >= top_score:
+                top_score = user[1]
+                winner.append(user[0])
+            else:
+                break
+        if top_score < 0:
+            winner_string = 'Remis! Nikt nie wygrał'
+        elif len(winner) > 1:
+            winner_string = 'Remis! ' + ', '.join(winner) + ' zdobyli tyle samo punktów.'
+        else:
+            winner_string = 'Wygrał/a ' + winner[0] + '!' 
+        return winner_string
     
 def decrease_user_points(username, room):
     user_from_db = User.query.filter_by(room_id=room, username=username).first()
@@ -234,3 +275,16 @@ def delete_users(room):
             if user.username != admin:
                 db.session.delete(user)
         db.session.commit()
+
+def set_timer_in_db(room, turn_length):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        room_from_db.timer = turn_length
+        db.session.commit()
+
+def return_time(room):
+    room_from_db = Room.query.filter_by(room_id=room).first()
+    if room_from_db:
+        return room_from_db.timer
+    return ""
+        

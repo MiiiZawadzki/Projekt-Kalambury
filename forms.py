@@ -9,10 +9,9 @@ from models import Room
 def check_data(form, field):
     room_from_db = Room.query.filter_by(room_id=form.room_id.data).first()
     if room_from_db is not None:
-        if session["username"] in room_from_db.users:
+        users_list = room_from_db.users.split(';')
+        if session["username"] in users_list:
             raise ValidationError("Użytkownik o takiej nazwie już istnieje w tym pokoju")
-        if room_from_db.game_state == "game_in_progress":
-            raise ValidationError("Gra jest w trakcie rozgrywki, dołącz za chwile")
 
 
 # custom validator to check if room id is correct

@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/game.css') }}">
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='images/favicon/apple-icon-57x57.png') }}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='images/favicon/apple-icon-60x60.png') }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='images/favicon/apple-icon-72x72.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static', filename='images/favicon/apple-icon-76x76.png') }}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static', filename='images/favicon/apple-icon-114x114.png') }}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static', filename='images/favicon/apple-icon-120x120.png') }}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static', filename='images/favicon/apple-icon-144x144.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='images/favicon/apple-icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/favicon/apple-icon-180x180.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{{ url_for('static', filename='images/favicon/android-icon-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='images/favicon/favicon-96x96.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon/favicon-16x16.png') }}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{{ url_for('static', filename='images/favicon/ms-icon-144x144.png') }}">
+    <meta name="theme-color" content="#ffffff">
     <title>Gra</title>
 </head>
 
@@ -17,7 +33,7 @@
                 <div class="upper-left-container">
                     <div class="drawing-tools">
                         <div id="draw-tools">
-                            <div class="colors-container">
+                            <div class="colors-container" style="visibility: hidden;">
                                 <input class="color-button mr-2" style="background-color: red;" id="red" type="button">
                                 <input class="color-button mr-2" style="background-color: green;" id="green" type="button">
                                 <input class="color-button mr-2" style="background-color: yellow;" id="yellow" type="button">
@@ -28,7 +44,7 @@
                                     <i class="fa fa-trash-o"></i>
                                 </button>
                             </div>
-                            <div class="pencils-container">
+                            <div class="pencils-container" style="visibility: hidden;">
                                 <input class="pencil-button mr-2" style="height: 28px;" id="max-width" type="button">
                                 <input class="pencil-button mr-2" style="height: 22px;" id="medium-width" type="button">
                                 <input class="pencil-button" style="height: 16px;" id="small-width" type="button">
@@ -44,7 +60,7 @@
                 <div class="canvas" id="canvasContainer">
                     <canvas id="gameCanvas" width="1000" height="700"></canvas>
                 </div>
-                <div class="word-container">
+                <div class="word-container" style="visibility: hidden;">
                     <div class="word-box">
                         Hasło:
                         <p id="word">...</p>
@@ -78,42 +94,7 @@
                                 <th>Użytkownik</th>
                                 <th>Wynik</th>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <th>1</th>
-                                    <td>Daniel</td>
-                                    <td>0</td>
-                                </tr>
-                                <tr>
-                                    <th>2</th>
-                                    <td>Brandon</td>
-                                    <td>443</td>
-                                </tr>
-                                <tr>
-                                    <th>3</th>
-                                    <td>Karol</td>
-                                    <td>1231</td>
-                                </tr>
-                                <tr>
-                                    <th>4</th>
-                                    <td>Zbyszek</td>
-                                    <td>32</td>
-                                </tr>
-                                <tr>
-                                    <th>5</th>
-                                    <td>Zbyszek</td>
-                                    <td>32</td>
-                                </tr>
-                                <tr>
-                                    <th>6</th>
-                                    <td>Zbyszek</td>
-                                    <td>32</td>
-                                </tr>
-                                <tr>
-                                    <th>7</th>
-                                    <td>Zbyszek</td>
-                                    <td>32</td>
-                                </tr>
+                            <tbody id="tableBody"> 
                             </tbody>
                         </table>
                     </div>
