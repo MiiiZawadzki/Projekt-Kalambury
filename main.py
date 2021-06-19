@@ -1,4 +1,4 @@
-import io
+import os
 from flask import Flask, render_template, redirect, url_for, session, request,jsonify
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
 from secrets import secret_key
@@ -318,6 +318,8 @@ def prepare_round_for_room(room):
     socketio.emit('who_draws', {"username": return_drawer_username(room)}, room=room)
 
     # clear canvas
+    file = open("static/canvasIMG/{}.txt".format(room), "w")
+    file.close()
     socketio.emit('clear', "", room=room)
     
     #table update
