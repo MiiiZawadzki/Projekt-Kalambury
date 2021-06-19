@@ -9,7 +9,9 @@ from functions import *
 from models import *
 from words import get_words_string
 import ast
+from engineio.payload import Payload
 
+Payload.max_decode_packets = 500
 # app config
 app = Flask(__name__)
 app.secret_key = secret_key
