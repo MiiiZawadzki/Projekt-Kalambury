@@ -14,23 +14,32 @@ def check_data(form, field):
             raise ValidationError("Użytkownik o takiej nazwie już istnieje w tym pokoju")
 
 
+def check_length(form, field):
+    if len(field.data) > 16:
+        raise ValidationError('Nazwa użytkownika jest za długa (maksimum 16 znaków)')
+    if len(field.data) < 3:
+        raise ValidationError('Nazwa użytkownika jest za krótka (minimum 3 znaki)')
+
+
 # custom validator to check if room id is correct
 def check_room(form, field):
     room_from_db = Room.query.filter_by(room_id=field.data).first()
     if room_from_db is None:
         raise ValidationError('Taki pokój nie istnieje')
+    if len(field.data) != 16:
+        raise ValidationError('ID pokoju musi mieć 16 znaków')
 
 
 # class including fields to enter game
 class IndexForm(FlaskForm):
-    username = StringField('username', validators=[InputRequired(), Length(min=3, max=16)])
+    username = StringField('username', validators=[check_length])
     submitJoin = SubmitField('Dołącz')
     submitCreate = SubmitField('Stwórz')
 
 
 # class including fields to join room
 class JoinRoomForm(FlaskForm):
-    room_id = StringField('pass_id', validators=[Length(min=16, max=16), check_room, check_data])
+    room_id = StringField('pass_id', validators=[check_room, check_data])
     submit = SubmitField('Dołącz')
 
 
