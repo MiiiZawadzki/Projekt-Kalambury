@@ -1,4 +1,4 @@
-import io
+import os
 from flask import Flask, render_template, redirect, url_for, session, request,jsonify
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
 from secrets import secret_key
@@ -9,7 +9,10 @@ from functions import *
 from models import *
 from words import get_words_string
 import ast
+from engineio.payload import Payload
+from time import sleep
 
+Payload.max_decode_packets = 500
 # app config
 app = Flask(__name__)
 app.secret_key = secret_key
@@ -261,6 +264,7 @@ def load(received_data):
         file = open("static/canvasIMG/{}.txt".format(room), "r")
         for line in file:
             data = ast.literal_eval(line.strip())
+            sleep(0.01)
             emit('draw', data, room=room)
         file.close()
     except:
@@ -318,6 +322,8 @@ def prepare_round_for_room(room):
     socketio.emit('who_draws', {"username": return_drawer_username(room)}, room=room)
 
     # clear canvas
+    file = open("static/canvasIMG/{}.txt".format(room), "w")
+    file.close()
     socketio.emit('clear', "", room=room)
     
     #table update
