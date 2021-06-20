@@ -9,7 +9,10 @@ from functions import *
 from models import *
 from words import get_words_string
 import ast
+from engineio.payload import Payload
+from time import sleep
 
+Payload.max_decode_packets = 500
 # app config
 app = Flask(__name__)
 app.secret_key = secret_key
@@ -261,6 +264,7 @@ def load(received_data):
         file = open("static/canvasIMG/{}.txt".format(room), "r")
         for line in file:
             data = ast.literal_eval(line.strip())
+            sleep(0.01)
             emit('draw', data, room=room)
         file.close()
     except:
