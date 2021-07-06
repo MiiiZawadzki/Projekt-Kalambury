@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, redirect, url_for, session, request,jsonify
 from flask_socketio import SocketIO, join_room, leave_room, send, emit
-from secrets import secret_key
+from secret_key import key
 from datetime import datetime
 from forms import *
 import urllib.parse
@@ -15,7 +15,7 @@ from time import sleep
 Payload.max_decode_packets = 500
 # app config
 app = Flask(__name__)
-app.secret_key = secret_key
+app.secret_key = key
 
 # SocketIO config
 socketio = SocketIO(app)
