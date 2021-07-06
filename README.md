@@ -14,6 +14,25 @@ Projekt wykonany przy użyciu:
 * Bulma
 * Socket.IO
 
+## Zrzuty z gry
+
+<h4>Ekran powitalny:</h4>
+<p>
+  <img src="./static/images/screens/welcome_page.png">
+</p>
+
+<h4>Ekran tworzenia pokoju:</h4>
+<p>
+  <img src="./static/images/screens/create_room.png">
+</p>
+
+<h4>zrzuty z rozgrywki:</h4>
+<p>
+  <img src="./static/images/screens/game_page.png">
+  <img src="./static/images/screens/game_drawer_page.png">
+</p>
+
+
 ## Uruchomienie
 * Sklonuj to repozytorium:
 ```sh
